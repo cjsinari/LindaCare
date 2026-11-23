@@ -296,3 +296,47 @@ describe('Error and empty states', () => {
     expect(screen.getByRole('button', { name: /clear filters/i })).toBeInTheDocument();
   });
 });
+
+describe('Audit log quick filters', () => {
+  const eventsCalls = (stub) => stub.mock.calls.map(([url]) => String(url))
+    .filter((u) => u.includes('/admin/events?'));
+
+  it('sends decision, resource type and a ten-minute window to the service', async () => {
+    const AuditLogPage = (await import('../pages/AuditLogPage')).default;
+    const stub = stubFetch([streamStub().route]);
+    const user = userEvent.setup();
+    await renderPage(<AuditLogPage />, { path: '/audit' });
+    await waitFor(() => expect(screen.getByText('Audit log')).toBeInTheDocument());
+
+    await user.click(screen.getByRole('button', { name: 'Decision: deny' }));
+    await user.click(screen.getByRole('button', { name: 'Resource: elderly_profile' }));
+    await user.click(screen.getByRole('button', { name: 'Last 10 minutes' }));
+
+    await waitFor(() => {
+      const last = eventsCalls(stub).at(-1);
+      expect(last).toContain('decision=deny');
+      expect(last).toContain('resourceType=elderly_profile');
+      expect(last).toMatch(/from=\d{4}-/);
+    });
+    const from = new Date(decodeURIComponent(eventsCalls(stub).at(-1).match(/from=([^&]+)/)[1]));
+    expect(Date.now() - from.getTime()).toBeGreaterThan(9 * 60 * 1000);
+    expect(Date.now() - from.getTime()).toBeLessThan(11 * 60 * 1000);
+    expect(screen.getByRole('button', { name: 'Decision: deny' })).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('shows the refusal when an administrator tries to open care records', async () => {
+    const AuditLogPage = (await import('../pages/AuditLogPage')).default;
+    stubFetch([
+      streamStub().route,
+      [/\/profiles$/, () => ({ status: 403, body: { error: 'Administrator accounts do not have access to care records.', code: 'NO_CLINICAL_ACCESS' } })],
+    ]);
+    const user = userEvent.setup();
+    await renderPage(<AuditLogPage />, { path: '/audit' });
+
+    await user.click(screen.getByRole('button', { name: 'Try to open care records' }));
+
+    const status = await screen.findByRole('status');
+    expect(status).toHaveTextContent('403 NO_CLINICAL_ACCESS');
+    expect(status).toHaveTextContent('Administrator accounts do not have access to care records.');
+  });
+});
