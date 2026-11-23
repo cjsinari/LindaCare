@@ -134,3 +134,47 @@ export const account = {
 
   unregisterPushToken: (token) => api.authed.delete('/auth/push-tokens', { token }),
 };
+
+/*
+ * Care profiles: the records the service's authorization layer protects
+ * (auth-service/src/routes/profileRoutes.js).
+ *
+ * The app decides nothing here. Who may read, change or share a profile is
+ * answered by the service on every call -- owner, assigned caregiver, or a 404
+ * that does not say which -- and these functions only carry the question.
+ *
+ * Profile shape: `{ id, fullName, homeAddress, dateOfBirth, medicalNotes,
+ * createdAt, updatedAt, accessVia }`, where `accessVia` is 'family_owner' or
+ * 'caregiver_assignment'.
+ */
+const profilePath = (id) => `/profiles/${encodeURIComponent(String(id))}`;
+
+export const profiles = {
+  /** `{ count, profiles }`, scoped by the service to what this account may read. */
+  list: () => api.authed.get('/profiles'),
+
+  /** `{ profile }`. Family only. `values` is `{ fullName, homeAddress?, dateOfBirth?, medicalNotes? }`. */
+  create: (values) => api.authed.post('/profiles', values),
+
+  /** `{ profile }`. A profile you may not see is a 404, the same as one that does not exist. */
+  get: (id) => api.authed.get(profilePath(id)),
+
+  /** `{ profile }`. Owner only; send only the fields that changed. */
+  update: (id, changes) => api.authed.patch(profilePath(id), changes),
+
+  /** `{ message }`. Owner only. The care team goes with it. */
+  remove: (id) => api.authed.delete(profilePath(id)),
+
+  /** `{ assignments: [{ id, status, startDate, endDate, caregiver: { id, fullName, phoneNumber } }] }` */
+  listAssignments: (id) => api.authed.get(`${profilePath(id)}/assignments`),
+
+  /** `{ assignment }`. The number must belong to an active, verified caregiver. */
+  assign: (id, { caregiverPhone, startDate }) =>
+    api.authed.post(`${profilePath(id)}/assignments`, {
+      caregiverPhone, ...(startDate && { startDate }),
+    }),
+
+  /** `{ message }`. Ends access; the service keeps the dated record. */
+  endAssignment: (id, assignmentId) =>
+    api.authed.delete(`${profilePath(id)}/assignments/${encodeURIComponent(String(assignmentId))}`),
+};

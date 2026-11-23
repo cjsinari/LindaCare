@@ -25,8 +25,9 @@
       ["expo-notifications", { "color": "#17807d" }]
     ],
     "extra": {
-      "apiBaseUrl": "http://10.0.2.2:3000",
-      "careApi": "auto"
+      "apiBaseUrl": "http://localhost:3000",
+      "careApi": "auto",
+      "demoMode": false
     }
   }
 }
