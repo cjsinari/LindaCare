@@ -53,6 +53,15 @@ export const CAREGIVER_PORTAL = {
       tabLabel: 'Report',
     },
     {
+      key: 'CareProfiles',
+      label: 'Care Profiles',
+      icon: 'id-card-outline',
+      iconActive: 'id-card',
+      route: 'CareProfiles',
+      hint: 'The care records you are assigned to read',
+      alsoActiveOn: ['CareProfileDetail', 'NewCareProfile', 'CareTeam'],
+    },
+    {
       key: 'Account',
       label: 'Account',
       icon: 'person-circle-outline',
@@ -110,6 +119,15 @@ export const FAMILY_PORTAL = {
       iconActive: 'notifications',
       route: 'Notifications',
       hint: 'Alerts about care and about your account',
+    },
+    {
+      key: 'CareProfiles',
+      label: 'Care Profiles',
+      icon: 'id-card-outline',
+      iconActive: 'id-card',
+      route: 'CareProfiles',
+      hint: 'Profiles of the people in your care, and their care team',
+      alsoActiveOn: ['CareProfileDetail', 'NewCareProfile', 'CareTeam'],
     },
     {
       key: 'Account',
