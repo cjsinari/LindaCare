@@ -30,7 +30,7 @@ jest.mock('../../auth/AuthContext', () => ({ useAuth: () => mockAuth }));
 
 const ELDER = {
   id: '11111111-1111-4111-8111-111111111111',
-  fullName: 'DEMO Elder One',
+  fullName: 'Sample Elder One',
   dateOfBirth: '1941-03-02',
   homeAddress: '1 Demo Lane',
   medicalNotes: 'Fake notes',
@@ -80,7 +80,7 @@ describe('the list', () => {
   it('offers New profile to a family member', async () => {
     profiles.list.mockResolvedValue({ count: 1, profiles: [ELDER] });
     await show(<CareProfilesScreen navigation={nav()} route={{}} />);
-    expect(await screen.findByText('DEMO Elder One')).toBeTruthy();
+    expect(await screen.findByText('Sample Elder One')).toBeTruthy();
     expect(screen.getByLabelText('New profile')).toBeTruthy();
   });
 
@@ -141,7 +141,7 @@ describe('the detail', () => {
     await fireEvent.press(screen.getByLabelText('Save changes'));
 
     // Nothing changed, so the name is sent as it is: the service still answers.
-    expect(profiles.update).toHaveBeenCalledWith(ELDER.id, { fullName: 'DEMO Elder One' });
+    expect(profiles.update).toHaveBeenCalledWith(ELDER.id, { fullName: 'Sample Elder One' });
     expect(await screen.findByText('403 READ_ONLY_ACCESS')).toBeTruthy();
     expect(screen.getByLabelText('Save changes')).toBeTruthy();
   });
@@ -179,14 +179,14 @@ describe('creating a profile', () => {
     profiles.create.mockResolvedValue({ profile: ELDER });
     await show(<NewCareProfileScreen navigation={navigation} />);
 
-    await fireEvent.changeText(screen.getByLabelText('Full name'), 'DEMO Elder One');
+    await fireEvent.changeText(screen.getByLabelText('Full name'), 'Sample Elder One');
     await fireEvent.press(screen.getByLabelText('Create profile'));
 
     expect(profiles.create).toHaveBeenCalledWith({
-      fullName: 'DEMO Elder One', dateOfBirth: null, homeAddress: null, medicalNotes: null,
+      fullName: 'Sample Elder One', dateOfBirth: null, homeAddress: null, medicalNotes: null,
     });
     await waitFor(() => expect(navigation.navigate).toHaveBeenCalledWith('CareProfiles', {
-      notice: { status: 201, message: 'Profile created for DEMO Elder One.' },
+      notice: { status: 201, message: 'Profile created for Sample Elder One.' },
     }));
   });
 
@@ -195,7 +195,7 @@ describe('creating a profile', () => {
       status: 400, details: [{ field: 'dateOfBirth', message: 'Use YYYY-MM-DD' }],
     }));
     await show(<NewCareProfileScreen navigation={nav()} />);
-    await fireEvent.changeText(screen.getByLabelText('Full name'), 'DEMO Elder One');
+    await fireEvent.changeText(screen.getByLabelText('Full name'), 'Sample Elder One');
     await fireEvent.press(screen.getByLabelText('Create profile'));
     expect(await screen.findByText('Use YYYY-MM-DD')).toBeTruthy();
   });
@@ -211,7 +211,7 @@ describe('the care team', () => {
     profiles.listAssignments.mockResolvedValue({ assignments: [ASSIGNMENT] });
     profiles.assign.mockRejectedValue(refused(404,
       'No verified caregiver account was found for that phone number.', 'CAREGIVER_NOT_FOUND'));
-    await show(<CareTeamScreen navigation={nav()} route={{ params: { id: ELDER.id, name: 'DEMO Elder One' } }} />);
+    await show(<CareTeamScreen navigation={nav()} route={{ params: { id: ELDER.id, name: 'Sample Elder One' } }} />);
 
     expect(await screen.findByText('Grace Achieng')).toBeTruthy();
     await fireEvent.changeText(screen.getByLabelText("Caregiver's phone number"), '0700000999');

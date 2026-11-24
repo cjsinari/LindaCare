@@ -921,17 +921,19 @@ and restart with `npx expo start --web -c`. Then:
    changes between networks), and make sure `CORS_ORIGINS` in
    `auth-service/.env` lists both `http://localhost:8081` (Expo web) and
    `http://localhost:5173` (the dashboard).
-2. Seed the demo data (see `auth-service/sql/demo/seed.sql`):
+2. Seed the care profiles (see `auth-service/sql/care/seed.sql`):
 
    ```powershell
    psql -d mzazicare_auth -v family_phone=+2547XXXXXXXX -v caregiver_phone=+2547YYYYYYYY `
-        -f auth-service/sql/demo/seed.sql
+        -f auth-service/sql/care/seed.sql
    ```
 
-   It prints the two profile ids; Elder Two's is the one to paste into
-   open-by-ID as the caregiver. `reset.sql` removes the `DEMO` profiles so
-   the seed can run again between rehearsals. It never touches `audit_logs`,
-   which is append-only.
+   It creates `Sample Elder One` and `Sample Elder Two` for the family
+   account and assigns the caregiver to Elder One only, then prints both
+   ids with the one the caregiver may reach marked. Elder Two's is the id
+   to paste into open-by-ID as the caregiver. `reset.sql` removes the
+   `Sample ` profiles so the seed can run again from a clean state; it
+   never touches `audit_logs`, which is append-only.
 3. **Two people at once.** On the web, `expo-secure-store` has no
    implementation, so the session lives only in the tab's memory: each tab is
    its own session and they cannot collide, but reloading a tab signs it out.
