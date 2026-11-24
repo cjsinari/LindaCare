@@ -888,6 +888,60 @@ Nothing sends pushes yet. The care events worth pushing (a visit filed, an
 incident) belong to the care module, which does not exist; this is the half of
 the contract that can be built now.
 
+## Care profiles, and the authorization walkthrough
+
+Both portals have a **Care Profiles** destination in the sidebar: a list of
+the profiles this account may read, a detail screen, a create form (family
+members) and the care team (the owner assigns or ends a caregiver's access by
+phone number). The screens call the service's `/profiles` routes and decide
+nothing themselves. A caregiver sees a read-only profile with no Edit, Delete,
+Care team or New profile buttons because the service would refuse them, not
+because hiding them is the protection.
+
+Every answer goes in a banner that stays until the next action: the service's
+own sentence, coloured green (2xx), amber (401, 429), red (403, 404) or grey
+(5xx, no answer).
+
+### Demo mode
+
+Set `"demoMode": true` under `expo.extra` in `app.json` (it defaults to false)
+and restart with `npx expo start --web -c`. Then:
+
+- every role sees every action button, so a caregiver can press Edit, Delete,
+  Care team and New profile and watch the service refuse;
+- the banner also prints the HTTP status and error code, e.g.
+  `403 READ_ONLY_ACCESS`, above the message;
+- the list gains **Open a profile by ID**, which asks the service for any
+  pasted id. A profile that is not yours and one that does not exist both come
+  back as `404 Care profile not found.`, word for word.
+
+### Running the walkthrough on the web
+
+1. Set `apiBaseUrl` to `http://localhost:3000` (not a LAN address, which
+   changes between networks), and make sure `CORS_ORIGINS` in
+   `auth-service/.env` lists both `http://localhost:8081` (Expo web) and
+   `http://localhost:5173` (the dashboard).
+2. Seed the care profiles (see `auth-service/sql/care/seed.sql`):
+
+   ```powershell
+   psql -d mzazicare_auth -v family_phone=+2547XXXXXXXX -v caregiver_phone=+2547YYYYYYYY `
+        -f auth-service/sql/care/seed.sql
+   ```
+
+   It creates `Sample Elder One` and `Sample Elder Two` for the family
+   account and assigns the caregiver to Elder One only, then prints both
+   ids with the one the caregiver may reach marked. Elder Two's is the id
+   to paste into open-by-ID as the caregiver. `reset.sql` removes the
+   `Sample ` profiles so the seed can run again from a clean state; it
+   never touches `audit_logs`, which is append-only.
+3. **Two people at once.** On the web, `expo-secure-store` has no
+   implementation, so the session lives only in the tab's memory: each tab is
+   its own session and they cannot collide, but reloading a tab signs it out.
+   Sign the family member in one window and the caregiver in a private window
+   or second browser profile.
+4. Open the dashboard's audit log beside them, turn on **Auto-refresh** and
+   **Last 10 minutes**, and add **Decision: deny** to show only refusals.
+
 ## Accessibility
 
 Issue #47 owns the full pass. What is already true:

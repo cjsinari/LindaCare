@@ -96,3 +96,15 @@ export const auditTrail = {
 export const policy = {
   get: () => api.get('/admin/policy'),
 };
+
+/*
+ * Care records, asked for with the administrator's own token.
+ *
+ * The dashboard never shows care records, and this is not a way to. It exists
+ * to show that the service refuses: an administrator account has no clinical
+ * access, and GET /profiles answers 403 NO_CLINICAL_ACCESS and writes the
+ * refusal to the audit trail like any other.
+ */
+export const careRecords = {
+  tryList: () => api.get('/profiles'),
+};

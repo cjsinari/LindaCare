@@ -8,6 +8,10 @@ import NewReportScreen from '../screens/caregiver/NewReportScreen';
 import AccountScreen from '../screens/account/AccountScreen';
 import ProfileScreen from '../screens/account/ProfileScreen';
 import ChangePhoneScreen from '../screens/account/ChangePhoneScreen';
+import CareProfilesScreen from '../screens/profiles/CareProfilesScreen';
+import CareProfileDetailScreen from '../screens/profiles/CareProfileDetailScreen';
+import NewCareProfileScreen from '../screens/profiles/NewCareProfileScreen';
+import CareTeamScreen from '../screens/profiles/CareTeamScreen';
 import { PortalChromeProvider } from '../components/caregiver/PortalChrome';
 import PortalTabBar from '../components/caregiver/PortalTabBar';
 import { colors } from '../theme/tokens';
@@ -79,6 +83,10 @@ export default function CaregiverNavigator() {
         />
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="ChangePhone" component={ChangePhoneScreen} />
+        <Stack.Screen name="CareProfiles" component={CareProfilesScreen} />
+        <Stack.Screen name="CareProfileDetail" component={CareProfileDetailScreen} />
+        <Stack.Screen name="NewCareProfile" component={NewCareProfileScreen} />
+        <Stack.Screen name="CareTeam" component={CareTeamScreen} />
       </Stack.Navigator>
     </PortalChromeProvider>
   );

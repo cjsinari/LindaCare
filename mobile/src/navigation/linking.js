@@ -61,6 +61,10 @@ export const PATHS = {
       VisitReport: 'visits/:visitId/report',
       Profile: 'account/profile',
       ChangePhone: 'account/phone',
+      CareProfiles: 'profiles',
+      CareProfileDetail: 'profiles/:id',
+      NewCareProfile: 'profiles/new',
+      CareTeam: 'profiles/:id/team',
     },
   },
   family: {
@@ -77,6 +81,10 @@ export const PATHS = {
       Notifications: 'notifications',
       Profile: 'account/profile',
       ChangePhone: 'account/phone',
+      CareProfiles: 'profiles',
+      CareProfileDetail: 'profiles/:id',
+      NewCareProfile: 'profiles/new',
+      CareTeam: 'profiles/:id/team',
     },
   },
 };
