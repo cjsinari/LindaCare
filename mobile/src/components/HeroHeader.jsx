@@ -17,6 +17,16 @@ import { colors, radius, space, type, TOUCH_TARGET } from '../theme/tokens';
  * because the header's navy has to run up behind the status bar while its
  * *content* starts below it. A SafeAreaView would inset the background too and
  * leave a white band above the navy on any phone with a notch.
+ *
+ * ── The card below it does not overlap it ──
+ *
+ * It used to. Every auth screen pulled its body up by 24dp so the first card
+ * sat over the header's lower edge, which is how the mockups draw it. On a
+ * real device that put the card's top border, the PHONE NUMBER label and some
+ * of the field itself inside the navy, so the header looked like it had been
+ * cut off rather than layered under. The pull is gone and the body starts
+ * below the header; `paddingBottom` here is what sets the distance, so it is
+ * one value for all five screens rather than five that drift apart.
  */
 export default function HeroHeader({
   title,
@@ -75,7 +85,7 @@ const styles = StyleSheet.create({
   wrap: {
     backgroundColor: colors.navy,
     paddingHorizontal: space.xl,
-    paddingBottom: space.xxl,
+    paddingBottom: space.xl,
     gap: space.md,
   },
   back: {

@@ -97,6 +97,28 @@ export function isoDay(value) {
   return `${dd} ${MONTHS[m - 1]} ${y}`;
 }
 
+/**
+ * Whole years between a date of birth and today, or null.
+ *
+ * Counted off the calendar rather than by dividing a span of milliseconds,
+ * because the second answer is wrong for anyone whose run of years contains
+ * the wrong number of leap days, and it is wrong on their birthday itself --
+ * which is the one day somebody is likely to check.
+ *
+ * Only the date part is read, so a `YYYY-MM-DD` from the service and a full
+ * timestamp give the same answer and neither shifts across a timezone.
+ */
+export function yearsOld(value) {
+  if (!value) return null;
+  const [y, m, d] = String(value).slice(0, 10).split('-').map(Number);
+  if (!y || !m || !d) return null;
+  const now = new Date();
+  let age = now.getFullYear() - y;
+  const monthsIn = now.getMonth() + 1 - m;
+  if (monthsIn < 0 || (monthsIn === 0 && now.getDate() < d)) age -= 1;
+  return age >= 0 && age < 130 ? age : null;
+}
+
 /** "Good morning" / "Good afternoon" / "Good evening". */
 export function greeting(value = new Date()) {
   const h = (toDate(value) || new Date()).getHours();

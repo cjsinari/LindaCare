@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import PortalShell from '../../components/caregiver/PortalShell';
 import Card, { Divider } from '../../components/oneui/Card';
-import Chip, { RECIPIENT_STATUS } from '../../components/oneui/Chip';
+import Chip, { recipientStatus } from '../../components/oneui/Chip';
 import Avatar from '../../components/oneui/Avatar';
 import SearchField from '../../components/oneui/SearchField';
 import PillButton from '../../components/oneui/PillButton';
@@ -136,7 +136,7 @@ export default function AssignmentsScreen({ navigation }) {
       >
         <View style={styles.list}>
           {filtered.map((person) => {
-            const statusInfo = RECIPIENT_STATUS[person.status] || RECIPIENT_STATUS.stable;
+            const statusInfo = recipientStatus(person.status);
 
             return (
               <Card
@@ -189,12 +189,29 @@ export default function AssignmentsScreen({ navigation }) {
                 <Divider inset={space.lg} />
 
                 <View style={styles.footRow}>
+                  {/*
+                    * Three facts about the care, which the service only has
+                    * once the care module exists. `visitCount` being null is
+                    * the signal that it does not: the assignment is real and
+                    * its history is simply not recorded anywhere yet. A zero
+                    * here would read as "nobody has ever visited this person",
+                    * which is a claim, and one we are in no position to make.
+                    */}
                   <View style={styles.stats}>
-                    <Stat label="Since" value={isoDay(person.since)} />
-                    <Stat label="Visits" value={String(person.visitCount ?? 0)} />
+                    <Stat
+                      label="Since"
+                      value={person.since ? isoDay(person.since) : '—'}
+                      spoken={person.since ? isoDay(person.since) : 'not recorded'}
+                    />
+                    <Stat
+                      label="Visits"
+                      value={person.visitCount == null ? '—' : String(person.visitCount)}
+                      spoken={person.visitCount == null ? 'not recorded' : String(person.visitCount)}
+                    />
                     <Stat
                       label="Last visit"
-                      value={person.lastVisitAt ? dayAndTime(person.lastVisitAt) : 'None yet'}
+                      value={lastVisitLabel(person)}
+                      spoken={person.visitCount == null ? 'not recorded' : lastVisitLabel(person)}
                     />
                   </View>
 
@@ -216,10 +233,28 @@ export default function AssignmentsScreen({ navigation }) {
   );
 }
 
-/** One of the three facts on the card's bottom rail. */
-function Stat({ label, value }) {
+/**
+ * The last visit, or why there is nothing to show.
+ *
+ * Two different absences: no care record at all (the care module is not
+ * mounted, so `visitCount` is null and nothing about the visits is known), and
+ * a care record that genuinely contains no visit yet.
+ */
+function lastVisitLabel(person) {
+  if (person.lastVisitAt) return dayAndTime(person.lastVisitAt);
+  return person.visitCount == null ? '—' : 'None yet';
+}
+
+/**
+ * One of the three facts on the card's bottom rail.
+ *
+ * `spoken` exists for the em dash. It is the right mark to print in a 90dp
+ * column and the wrong thing to say out loud, where screen readers variously
+ * announce "dash", the label twice, or nothing at all.
+ */
+function Stat({ label, value, spoken }) {
   return (
-    <View style={styles.stat} accessible accessibilityLabel={`${label}: ${value}`}>
+    <View style={styles.stat} accessible accessibilityLabel={`${label}: ${spoken ?? value}`}>
       <Text style={styles.statLabel}>{label}</Text>
       <Text style={styles.statValue} numberOfLines={1}>{value}</Text>
     </View>

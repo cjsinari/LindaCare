@@ -35,7 +35,25 @@ export const RECIPIENT_STATUS = {
   stable: { tone: 'stable', label: 'Stable' },
   attention: { tone: 'attention', label: 'Needs attention' },
   inactive: { tone: 'neutral', label: 'Inactive' },
+  /*
+   * Nobody has assessed this person yet.
+   *
+   * Reached when the service knows the assignment but has no care record
+   * behind it -- which is every assignment until the care module lands. A
+   * care status is a judgement a human makes, so the absence of one is its
+   * own state and says so, in neutral grey.
+   */
+  unknown: { tone: 'neutral', label: 'No status yet' },
 };
+
+/**
+ * The status to draw for a value that may be null, missing or unrecognised.
+ *
+ * Every screen used to default those to `stable`, which printed a reassuring
+ * "Stable" over a person nobody had looked at. Defaulting the other way is the
+ * only safe direction for a clinical-sounding label.
+ */
+export const recipientStatus = (value) => RECIPIENT_STATUS[value] || RECIPIENT_STATUS.unknown;
 
 export const VISIT_STATUS = {
   upcoming: { tone: 'upcoming', label: 'Upcoming' },

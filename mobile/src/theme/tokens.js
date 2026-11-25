@@ -14,8 +14,16 @@
  * around them:
  *
  *   1. A saturated page.  #eaf1f6 is a visibly blue grey, and every white card
- *      on it read as a cut-out. `page` is now #f4f6f8 -- still cool, but close
- *      enough to neutral that the cards look like paper rather than stickers.
+ *      on it read as a cut-out. `page` is now #e6ecf3: cool enough that a
+ *      white card separates from it by tone rather than by shadow, flat
+ *      enough that it never competes with one.
+ *
+ *      The first pass of the restyle took it to #f4f6f8 and overshot. Two
+ *      steps off white is not a page, it is more white: a screen of white
+ *      cards on it read as one undifferentiated sheet, which is the same
+ *      problem as the cut-outs wearing different clothes. #e6ecf3 is the
+ *      darkest the page can go while `inkMuted` still clears 4.5:1 on it,
+ *      which is what set the value.
  *
  *   2. Shadow doing the work of a line.  Every card, tile, search bar and
  *      segmented control floated on a soft 12dp drop shadow and had no edge at
@@ -47,10 +55,10 @@
  *
  *   ink on surface              #14283d on #ffffff   14.99:1  AAA
  *   label on surface            #46678a on #ffffff    5.89:1  AA
- *   label on page               #46678a on #f4f6f8    5.43:1  AA
- *   inkMuted on surface         #55708c on #ffffff    5.14:1  AA
- *   inkMuted on page            #55708c on #f4f6f8    4.75:1  AA
- *   inkMuted on surfaceSunken   #55708c on #eef1f5    4.54:1  AA
+ *   label on page               #46678a on #e6ecf3    4.95:1  AA
+ *   inkMuted on surface         #4e6a87 on #ffffff    5.62:1  AA
+ *   inkMuted on page            #4e6a87 on #e6ecf3    4.73:1  AA
+ *   inkMuted on surfaceSunken   #4e6a87 on #eef1f5    4.96:1  AA
  *   white on navy               #ffffff on #15314f   13.26:1  AAA
  *   navy subtitle on navy       #9bb3cc on #15314f    6.13:1  AA
  *   white on teal (button)      #ffffff on #17807d    4.75:1  AA
@@ -107,7 +115,8 @@ export const colors = {
   tealInk: '#0f5e5c',
 
   // -- Surfaces --
-  page: '#f4f6f8',          // behind the white cards: cool, but near neutral
+  page: '#e6ecf3',          // behind the white cards: cool, and tinted enough
+                            // that a card reads as a card without a shadow
   surface: '#ffffff',
   surfaceSunken: '#eef1f5', // an inset fill: a pressed row, a neutral chip
   field: '#f7f9fb',         // an input's own fill
@@ -122,7 +131,10 @@ export const colors = {
 
   // -- Ink --
   ink: '#14283d',
-  inkMuted: '#55708c',
+  // Darkened from #55708c when `page` came down to #e6ecf3: at the old value
+  // it measured 4.45:1 there, under the 4.5 floor for body text. On every
+  // other ground it simply got clearer.
+  inkMuted: '#4e6a87',
   label: '#46678a',         // the uppercase field labels
   placeholder: '#93a7bb',
   onNavy: '#ffffff',
@@ -308,6 +320,22 @@ export const oneui = {
 
   /** The height of the compact bar the title collapses into. */
   barHeight: 52,
+
+  /*
+   * The navy band above the bar, added on top of the status-bar inset.
+   *
+   * It does two things. It gives the chrome a brand edge, so a screen of white
+   * cards on a light page is anchored by something rather than fading into the
+   * top of the display -- the same job the console's charcoal top bar does.
+   * And it is what the light status-bar icons are drawn against: App.jsx asks
+   * for `style="light"`, which was white-on-white over a white bar, so on the
+   * portal screens the clock and the battery were invisible. It draws in
+   * `sidebarColors.surface`, and white on that is 15.63:1.
+   *
+   * 3dp rather than 0 so the band survives a device that reports no top inset
+   * at all; where there is an inset, this is the sliver of navy below it.
+   */
+  topBand: 3,
 
   motion: { fast: 160, base: 240, slow: 340 },
 

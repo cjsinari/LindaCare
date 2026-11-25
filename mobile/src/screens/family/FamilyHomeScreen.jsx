@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import PortalShell from '../../components/caregiver/PortalShell';
 import Card, { Divider, SectionHeading } from '../../components/oneui/Card';
-import Chip, { RECIPIENT_STATUS } from '../../components/oneui/Chip';
+import Chip, { recipientStatus } from '../../components/oneui/Chip';
 import PillButton from '../../components/oneui/PillButton';
 import { ListEmpty, ListError, ListSkeleton } from '../../components/oneui/ListState';
 import CaregiverCard from '../../components/family/CaregiverCard';
@@ -208,7 +208,7 @@ export default function FamilyHomeScreen({ navigation }) {
  * one people trust.
  */
 function StatusCard({ data, name }) {
-  const status = RECIPIENT_STATUS[data.recipient?.status] || RECIPIENT_STATUS.stable;
+  const status = recipientStatus(data.recipient?.status);
   const last = data.lastVisit;
   const mood = last?.visit ? wellbeingFor(last.visit.wellbeing) : null;
 
