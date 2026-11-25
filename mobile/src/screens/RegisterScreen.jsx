@@ -21,7 +21,7 @@ import {
   schemaFor, defaultValues, toRegisterPayload, SERVICE_FIELD_TO_FORM_FIELD,
 } from '../validation/register';
 import { cleanDigits } from '../validation/phone';
-import { colors, radius, shadow, space, type } from '../theme/tokens';
+import { colors, radius, space, surface, type } from '../theme/tokens';
 
 /*
  * Create account: the registration form for both roles. Issue #41.
@@ -484,7 +484,7 @@ const styles = StyleSheet.create({
     // The last field in the card carries its own bottom margin; this cancels
     // it so the card's internal spacing stays even.
     paddingBottom: space.xl - space.lg,
-    ...shadow.card,
+    ...surface.card,
   },
 
   submitError: { marginTop: -space.xs },

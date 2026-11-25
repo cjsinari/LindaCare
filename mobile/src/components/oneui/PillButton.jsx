@@ -16,8 +16,11 @@ import { colors, oneui, space, type, TOUCH_TARGET } from '../../theme/tokens';
  *
  *   solid   the single most important action on a screen. One per screen.
  *   tonal   a secondary action that is still a real action -- "Check in" on a
- *           schedule row. Teal on mint rather than white on teal, so it does
- *           not compete with the solid one.
+ *           schedule row. Dark teal on a soft teal ground rather than white on
+ *           full teal, so it does not compete with the solid one. It used to
+ *           be drawn in the success green on a mint ground, because `tealSoft`
+ *           and `successBg` were the same value; both halves of that are
+ *           fixed in tokens.js.
  *   quiet   a text action with no fill: "View all →". Still 48dp tall.
  *   danger  destructive, and visually separated from the rest.
  *
@@ -26,9 +29,9 @@ import { colors, oneui, space, type, TOUCH_TARGET } from '../../theme/tokens';
  */
 const VARIANTS = {
   solid: { bg: colors.teal, pressedBg: colors.tealPressed, fg: colors.onTeal },
-  tonal: { bg: colors.tealSoft, pressedBg: '#d2ebdf', fg: colors.success },
-  quiet: { bg: 'transparent', pressedBg: colors.field, fg: colors.link },
-  danger: { bg: colors.dangerBg, pressedBg: '#f9d9d5', fg: colors.danger },
+  tonal: { bg: colors.tealSoft, pressedBg: colors.tealSoftPressed, fg: colors.tealInk },
+  quiet: { bg: 'transparent', pressedBg: colors.surfaceSunken, fg: colors.link },
+  danger: { bg: colors.dangerBg, pressedBg: colors.dangerBgPressed, fg: colors.danger },
 };
 
 export default function PillButton({

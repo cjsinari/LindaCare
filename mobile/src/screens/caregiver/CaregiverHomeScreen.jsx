@@ -12,7 +12,7 @@ import ListState, { ListError } from '../../components/oneui/ListState';
 import useAsyncResource from '../../hooks/useAsyncResource';
 import { care } from '../../api/caregiver';
 import { useAuth } from '../../auth/AuthContext';
-import { colors, oneui, shadow, space, type } from '../../theme/tokens';
+import { colors, oneui, space, surface, type } from '../../theme/tokens';
 import { dayAndTime, greeting, longDate, time } from '../../utils/datetime';
 
 /*
@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.md,
     paddingVertical: space.sm,
     gap: 1,
-    ...shadow.card,
+    ...surface.card,
   },
   riskLabel: { ...type.label, fontSize: 9, color: colors.label },
   riskRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },

@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, oneui, shadow, space, type, TOUCH_TARGET } from '../../theme/tokens';
+import { colors, oneui, space, surface, type, TOUCH_TARGET } from '../../theme/tokens';
 
 /*
  * The rounded search bar from the assignments mockup.
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     paddingLeft: space.lg,
     paddingRight: space.xs,
-    ...shadow.card,
+    ...surface.card,
   },
   icon: { marginRight: space.sm },
   input: {

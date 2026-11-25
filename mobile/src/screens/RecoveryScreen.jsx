@@ -12,7 +12,7 @@ import { bannerFor } from '../auth/errors';
 import {
   recoverySchema, recoveryDefaults, toContact, channelFor, SERVICE_FIELD_TO_FORM_FIELD,
 } from '../validation/recovery';
-import { colors, radius, shadow, space, type } from '../theme/tokens';
+import { colors, radius, space, surface, type } from '../theme/tokens';
 
 /*
  * "I cannot get into my account."
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
     padding: space.xl,
-    ...shadow.card,
+    ...surface.card,
   },
   note: { ...type.caption, color: colors.inkMuted, marginBottom: space.lg },
   footer: { alignItems: 'center' },

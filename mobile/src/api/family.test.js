@@ -89,7 +89,7 @@ describe('notifications', () => {
             id: 7,
             type: 'new_device_trusted',
             severity: 'medium',
-            message: 'MzaziCare: a new device was verified and added to your account.',
+            message: 'LindaCare: a new device was verified and added to your account.',
             createdAt: new Date().toISOString(),
             readAt: null,
           }],
@@ -113,6 +113,35 @@ describe('notifications', () => {
     expect(items.some((n) => n.category === 'incident')).toBe(true);
     const times = items.map((n) => new Date(n.createdAt).getTime());
     expect(times).toEqual([...times].sort((a, b) => b - a));
+  });
+
+  /*
+   * Notices written before the MzaziCare -> LindaCare rename are still in the
+   * audit trail under the old prefix, and they are not rewritten, so the
+   * reader has to strip either one. Without this the old rows would show the
+   * dead brand name to the one person who scrolls back far enough.
+   */
+  it('strips the pre-rename brand prefix as well', async () => {
+    api.authed.get.mockImplementation(async (path) => {
+      if (path === '/auth/notifications') {
+        return {
+          unread: 1,
+          notifications: [{
+            id: 8,
+            type: 'new_device_trusted',
+            severity: 'medium',
+            message: 'MzaziCare: a new device was verified and added to your account.',
+            createdAt: new Date().toISOString(),
+            readAt: null,
+          }],
+        };
+      }
+      throw new ApiError('Not Found', { status: 404 });
+    });
+
+    const { items } = await family.notifications();
+    const notice = items.find((n) => n.id === 'account-8');
+    expect(notice.message).toBe('a new device was verified and added to your account.');
   });
 
   it('always reads account notices from the real service, even in mock mode', async () => {

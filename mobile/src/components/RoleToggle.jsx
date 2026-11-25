@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, radius, shadow, space, type, TOUCH_TARGET } from '../theme/tokens';
+import { colors, radius, space, surface, type, TOUCH_TARGET } from '../theme/tokens';
 
 /*
  * The Caregiver / Family Member segmented control.
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: radius.md + 2,
     padding: space.xs + 2,
-    ...shadow.card,
+    ...surface.card,
   },
   segment: {
     flex: 1,
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   // The selected segment is navy-filled in the mockups: 13.26:1 against its
   // white label, and distinguished by fill rather than by colour alone.
   segmentActive: { backgroundColor: colors.navy },
-  segmentPressed: { backgroundColor: colors.field },
+  segmentPressed: { backgroundColor: colors.surfaceSunken },
   text: { ...type.bodyMedium, color: colors.link },
   textActive: { fontFamily: type.button.fontFamily, color: colors.onNavy },
 });

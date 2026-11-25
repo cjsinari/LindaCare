@@ -342,8 +342,8 @@ const styles = StyleSheet.create({
   contactIcon: {
     width: 34,
     height: 34,
-    borderRadius: 12,
-    backgroundColor: colors.field,
+    borderRadius: oneui.radius.control,
+    backgroundColor: colors.surfaceSunken,
     alignItems: 'center',
     justifyContent: 'center',
   },

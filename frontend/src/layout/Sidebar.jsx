@@ -36,7 +36,7 @@ export default function Sidebar({ open, onClose }) {
         <div className="sidebar__head">
           <div className="sidebar__mark" aria-hidden="true">MC</div>
           <div className="sidebar__brand">
-            <span className="sidebar__name">MzaziCare</span>
+            <span className="sidebar__name">LindaCare</span>
             <span className="sidebar__role">Security console</span>
           </div>
           <button

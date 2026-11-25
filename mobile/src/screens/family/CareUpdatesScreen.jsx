@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.lg,
     borderRadius: oneui.radius.pill,
     backgroundColor: colors.surface,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: colors.fieldBorder,
   },
   filterActive: { backgroundColor: colors.teal, borderColor: colors.teal },

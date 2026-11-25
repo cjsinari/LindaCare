@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: space.xs + 1,
-    backgroundColor: colors.field,
+    backgroundColor: colors.surfaceSunken,
     borderRadius: oneui.radius.pill,
     paddingHorizontal: space.md - 2,
     paddingVertical: space.xs,

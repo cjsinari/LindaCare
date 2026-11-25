@@ -396,11 +396,11 @@ const styles = StyleSheet.create({
   contactMeta: { ...type.caption, fontSize: 12, color: colors.inkMuted },
   contactPhone: { ...type.caption, fontSize: 12, color: colors.link },
 
-  settings: { gap: space.lg, borderWidth: 1.5, borderColor: colors.tealSoft },
+  settings: { gap: space.lg },
   settingsNote: { ...type.caption, fontSize: 12, color: colors.inkMuted },
   input: {
     minHeight: TOUCH_TARGET,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: colors.fieldBorder,
     borderRadius: oneui.radius.control,
     backgroundColor: colors.field,

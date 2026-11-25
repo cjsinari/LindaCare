@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PillButton from '../oneui/PillButton';
 import Banner from '../Banner';
-import { colors, oneui, space, type, TOUCH_TARGET } from '../../theme/tokens';
+import { colors, oneui, space, surface, type, TOUCH_TARGET } from '../../theme/tokens';
 
 /*
  * Add a care note, or file an incident report. Item 6 of issue #44.
@@ -266,13 +266,14 @@ const styles = StyleSheet.create({
     borderTopRightRadius: oneui.radius.sheet,
     paddingTop: space.md,
     maxHeight: '92%',
+    ...surface.sheet,
   },
   grabber: {
     alignSelf: 'center',
     width: 40,
     height: 4,
     borderRadius: oneui.radius.pill,
-    backgroundColor: colors.fieldBorder,
+    backgroundColor: colors.surfaceSunken,
     marginBottom: space.md,
   },
 
@@ -299,7 +300,7 @@ const styles = StyleSheet.create({
   segments: {
     flexDirection: 'row',
     gap: space.sm,
-    backgroundColor: colors.field,
+    backgroundColor: colors.surfaceSunken,
     borderRadius: oneui.radius.pill,
     padding: space.xs,
   },
@@ -318,7 +319,7 @@ const styles = StyleSheet.create({
 
   input: {
     minHeight: 150,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: colors.fieldBorder,
     borderRadius: oneui.radius.inner,
     backgroundColor: colors.field,
@@ -342,7 +343,7 @@ const styles = StyleSheet.create({
     paddingBottom: space.sm,
     gap: space.sm,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: colors.fieldBorder,
+    borderTopColor: colors.border,
   },
   footerHint: { ...type.caption, fontSize: 12, color: colors.inkMuted, textAlign: 'center' },
 

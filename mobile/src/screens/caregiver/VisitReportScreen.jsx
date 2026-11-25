@@ -354,7 +354,7 @@ export default function VisitReportScreen({ navigation, route }) {
                           onPress={() => setWellbeing(option.value)}
                           style={[
                             styles.wellbeing,
-                            selected && { borderColor: option.tone, backgroundColor: colors.field },
+                            selected && { borderColor: option.tone, backgroundColor: colors.surfaceSunken },
                           ]}
                           accessibilityRole="radio"
                           accessibilityState={{ selected }}
@@ -494,7 +494,7 @@ const styles = StyleSheet.create({
   scroll: { paddingHorizontal: space.lg, paddingBottom: space.xxl, gap: space.xl },
 
   timeRow: { flexDirection: 'row', alignItems: 'flex-end', gap: space.md },
-  timeRule: { width: StyleSheet.hairlineWidth, alignSelf: 'stretch', backgroundColor: colors.fieldBorder },
+  timeRule: { width: StyleSheet.hairlineWidth, alignSelf: 'stretch', backgroundColor: colors.border },
   timeSlot: { flex: 1, gap: space.sm },
   timeLabel: { ...type.label, fontSize: 10, color: colors.label },
   timeBox: {
@@ -502,13 +502,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     minHeight: TOUCH_TARGET - 4,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: colors.fieldBorder,
     borderRadius: oneui.radius.control,
     backgroundColor: colors.field,
     paddingHorizontal: space.md,
   },
-  timeBoxFilled: { borderColor: colors.tealSoft, backgroundColor: colors.tealSoft },
+  timeBoxFilled: { borderColor: colors.fieldBorderFocus, backgroundColor: colors.tealSoft },
   timeValue: { ...type.bodyMedium, fontSize: 16, color: colors.ink, letterSpacing: 1 },
   timeValueEmpty: { color: colors.placeholder },
   durationText: { ...type.caption, fontSize: 12, color: colors.inkMuted, paddingTop: space.md },
@@ -522,7 +522,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 2,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: colors.fieldBorder,
     borderRadius: oneui.radius.inner,
     paddingVertical: space.md,
@@ -547,7 +547,7 @@ const styles = StyleSheet.create({
   notesHint: { ...type.caption, fontSize: 12, color: colors.inkMuted, marginBottom: space.md },
   notesInput: {
     minHeight: 130,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: colors.fieldBorder,
     borderRadius: oneui.radius.inner,
     backgroundColor: colors.field,

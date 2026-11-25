@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Label from './Label';
 import FieldError from './FieldError';
-import { colors, radius, shadow, space, type, TOUCH_TARGET } from '../theme/tokens';
+import { colors, radius, space, surface, type, TOUCH_TARGET } from '../theme/tokens';
 
 /*
  * A dropdown, drawn as the mockups draw it and opened as a full-height sheet.
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: space.sm,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: colors.fieldBorder,
     borderRadius: radius.md,
     backgroundColor: colors.field,
@@ -206,14 +206,14 @@ const styles = StyleSheet.create({
     // the form behind it is what makes it read as a layer rather than a page.
     maxHeight: '75%',
     paddingTop: space.md,
-    ...shadow.card,
+    ...surface.sheet,
   },
   grabber: {
     alignSelf: 'center',
     width: 40,
     height: 4,
     borderRadius: radius.pill,
-    backgroundColor: colors.fieldBorder,
+    backgroundColor: colors.surfaceSunken,
     marginBottom: space.md,
   },
   sheetHead: {
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     marginHorizontal: space.xl,
     marginBottom: space.sm,
     minHeight: TOUCH_TARGET,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: colors.fieldBorder,
     borderRadius: radius.md,
     backgroundColor: colors.field,
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
     marginHorizontal: space.md,
     borderRadius: radius.sm,
   },
-  optionPressed: { backgroundColor: colors.field },
+  optionPressed: { backgroundColor: colors.surfaceSunken },
   optionText: { ...type.body, color: colors.ink, flex: 1 },
   optionTextSelected: { fontFamily: type.bodyMedium.fontFamily, color: colors.teal },
 

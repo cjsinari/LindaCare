@@ -1,6 +1,6 @@
-# MzaziCare — Security Console
+# LindaCare — Security Console
 
-The administrator dashboard for the MzaziCare authentication service: security
+The administrator dashboard for the LindaCare authentication service: security
 event visualisation, anomaly review, and the response actions an administrator
 takes after reviewing them.
 

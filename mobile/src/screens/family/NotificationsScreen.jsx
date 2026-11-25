@@ -41,7 +41,7 @@ const ICONS = {
   note: { name: 'document-text', tint: colors.info, bg: colors.infoBg },
   incident: { name: 'warning', tint: colors.warning, bg: colors.warningBg },
   schedule: { name: 'calendar', tint: colors.teal, bg: colors.tealSoft },
-  account: { name: 'shield-checkmark', tint: colors.navy, bg: colors.field },
+  account: { name: 'shield-checkmark', tint: colors.navy, bg: colors.surfaceSunken },
 };
 
 export default function NotificationsScreen({ navigation }) {

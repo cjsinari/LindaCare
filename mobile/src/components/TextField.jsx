@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   wrap: { marginBottom: space.lg },
   input: {
     minHeight: TOUCH_TARGET,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: colors.fieldBorder,
     borderRadius: radius.md,
     backgroundColor: colors.field,

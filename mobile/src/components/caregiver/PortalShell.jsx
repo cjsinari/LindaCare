@@ -1,12 +1,12 @@
 import { useRef } from 'react';
 import {
-  Animated, Platform, Pressable, RefreshControl, StyleSheet, Text, View,
+  Animated, Pressable, RefreshControl, StyleSheet, Text, View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Sidebar from './Sidebar';
 import { usePortalChrome } from './PortalChrome';
-import { colors, oneui, space, type, TOUCH_TARGET } from '../../theme/tokens';
+import { colors, oneui, space, surface, type, TOUCH_TARGET } from '../../theme/tokens';
 
 /*
  * The frame every caregiver screen is drawn inside: the sidebar, the compact
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     // A hairline rather than a shadow: One UI separates the bar from the page
     // with a line that appears only where the two actually meet.
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.fieldBorder,
+    borderBottomColor: colors.border,
   },
   barButton: {
     width: TOUCH_TARGET,
@@ -229,7 +229,10 @@ const styles = StyleSheet.create({
 
   status: { flexDirection: 'row', alignItems: 'center', gap: space.xs + 1, paddingRight: space.md },
   statusDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: colors.success },
-  statusText: { ...type.caption, fontSize: 11, color: colors.success },
+  // The dot carries the colour and the words carry the meaning. Printing the
+  // words in green as well made a routine "nothing is wrong" the brightest
+  // thing in the bar; the console does the same thing with its status pills.
+  statusText: { ...type.caption, fontSize: 11, color: colors.inkMuted },
 
   scrollContent: { paddingHorizontal: space.lg },
   staticHeader: { paddingHorizontal: space.lg },
@@ -261,14 +264,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderTopLeftRadius: oneui.radius.sheet,
     borderTopRightRadius: oneui.radius.sheet,
-    ...Platform.select({
-      android: { elevation: 12 },
-      default: {
-        shadowColor: '#0b2033',
-        shadowOpacity: 0.12,
-        shadowRadius: 16,
-        shadowOffset: { width: 0, height: -4 },
-      },
-    }),
+    // A hairline as well as the shadow. The shadow says it is above the list;
+    // the line is what still separates the two where the shadow is too faint
+    // to read, which on a bright phone outdoors is most of the time.
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    ...surface.sheet,
   },
 });

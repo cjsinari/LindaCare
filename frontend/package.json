@@ -1,9 +1,9 @@
 {
-  "name": "mzazicare-admin-dashboard",
+  "name": "lindacare-admin-dashboard",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Administrator dashboard for the MzaziCare authentication service: security event visualisation, anomaly review and response actions.",
+  "description": "Administrator dashboard for the LindaCare authentication service: security event visualisation, anomaly review and response actions.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

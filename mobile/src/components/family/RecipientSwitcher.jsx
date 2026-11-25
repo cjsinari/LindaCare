@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.lg,
     borderRadius: oneui.radius.pill,
     backgroundColor: colors.surface,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: colors.fieldBorder,
   },
   chipActive: { backgroundColor: colors.navy, borderColor: colors.navy },

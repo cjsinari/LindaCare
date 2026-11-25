@@ -13,7 +13,7 @@ import { bannerFor } from '../auth/errors';
 import {
   loginSchema, loginDefaults, toPhoneNumber, SERVICE_FIELD_TO_FORM_FIELD,
 } from '../validation/login';
-import { colors, radius, shadow, space, type } from '../theme/tokens';
+import { colors, radius, space, surface, type } from '../theme/tokens';
 
 /*
  * Sign in: the phone number, and nothing else.
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
     padding: space.xl,
-    ...shadow.card,
+    ...surface.card,
   },
   hint: { ...type.caption, color: colors.inkMuted, marginBottom: space.lg },
   recover: { alignSelf: 'center', paddingVertical: space.md, minHeight: 48, justifyContent: 'center' },

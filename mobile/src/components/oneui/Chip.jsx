@@ -19,7 +19,7 @@ import { colors, oneui, space, type } from '../../theme/tokens';
  * never the only signal: the row it is on also states the status in text.
  */
 const TONES = {
-  neutral: { bg: colors.field, fg: colors.inkMuted, icon: 'ellipse-outline' },
+  neutral: { bg: colors.surfaceSunken, fg: colors.inkMuted, icon: 'ellipse-outline' },
   stable: { bg: colors.successBg, fg: colors.success, icon: 'checkmark-circle' },
   active: { bg: colors.successBg, fg: colors.success, icon: 'checkmark-circle' },
   attention: { bg: colors.warningBg, fg: colors.warning, icon: 'alert-circle' },
