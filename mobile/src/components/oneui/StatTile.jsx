@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 import Touchable from './Touchable';
-import { colors, oneui, shadow, space, type } from '../../theme/tokens';
+import { colors, oneui, space, surface, type } from '../../theme/tokens';
 
 /*
  * The three counters across the top of the dashboard: assigned, today,
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 2,
     minHeight: 86,
-    ...shadow.card,
+    ...surface.card,
   },
   value: {
     fontFamily: type.hero.fontFamily,

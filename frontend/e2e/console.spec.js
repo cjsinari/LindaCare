@@ -40,7 +40,7 @@ async function signIn(page) {
   const requestedAt = Date.now();
 
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'MzaziCare' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'LindaCare' })).toBeVisible();
 
   await page.getByLabel('Phone number').fill(ADMIN_PHONE);
   await page.getByRole('button', { name: 'Send code' }).click();
@@ -231,7 +231,7 @@ test.describe('The security console', () => {
     await page.goto('/sessions');
     // The guard redirects rather than rendering an empty shell whose every
     // request comes back 403.
-    await expect(page.getByRole('heading', { name: 'MzaziCare' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'LindaCare' })).toBeVisible();
     await expect(page).toHaveURL(/\/login/);
     await anonymous.close();
   });

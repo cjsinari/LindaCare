@@ -8,7 +8,7 @@ import Label from './Label';
 import FieldError from './FieldError';
 import { COUNTRIES } from '../data/locality';
 import { formatLocal } from '../validation/phone';
-import { colors, radius, shadow, space, type, TOUCH_TARGET } from '../theme/tokens';
+import { colors, radius, space, surface, type, TOUCH_TARGET } from '../theme/tokens';
 
 /*
  * The phone input from the mockups: a dial-code chip beside the local number.
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: space.xs,
     paddingHorizontal: space.md,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: colors.fieldBorder,
     borderRadius: radius.md,
     backgroundColor: colors.field,
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     minHeight: TOUCH_TARGET,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: colors.fieldBorder,
     borderRadius: radius.md,
     backgroundColor: colors.field,
@@ -223,14 +223,14 @@ const styles = StyleSheet.create({
     borderTopRightRadius: radius.sheet,
     maxHeight: '75%',
     paddingTop: space.md,
-    ...shadow.card,
+    ...surface.sheet,
   },
   grabber: {
     alignSelf: 'center',
     width: 40,
     height: 4,
     borderRadius: radius.pill,
-    backgroundColor: colors.fieldBorder,
+    backgroundColor: colors.surfaceSunken,
     marginBottom: space.md,
   },
   sheetHead: {
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     marginHorizontal: space.xl,
     marginBottom: space.sm,
     minHeight: TOUCH_TARGET,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: colors.fieldBorder,
     borderRadius: radius.md,
     backgroundColor: colors.field,
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
     marginHorizontal: space.lg,
     borderRadius: radius.sm,
   },
-  optionPressed: { backgroundColor: colors.field },
+  optionPressed: { backgroundColor: colors.surfaceSunken },
   optionText: { ...type.body, color: colors.ink, flex: 1 },
   optionTextSelected: { fontFamily: type.bodyMedium.fontFamily, color: colors.teal },
   empty: { ...type.body, color: colors.inkMuted, textAlign: 'center', paddingVertical: space.xl },

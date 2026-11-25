@@ -15,7 +15,7 @@ const sms = AT.SMS;
  * @returns {Promise}
  */
 async function sendOTP(phoneNumber, otp) {
-  const message = `Your MzaziCare verification code is: ${otp}. Valid for 5 minutes. Do not share this code with anyone.`;
+  const message = `Your LindaCare verification code is: ${otp}. Valid for 5 minutes. Do not share this code with anyone.`;
 
   try {
     const response = await sms.send({

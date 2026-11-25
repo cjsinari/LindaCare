@@ -12,7 +12,7 @@ import { getDeviceFingerprint } from '../auth/session';
 import { useAuth } from '../auth/AuthContext';
 import { bannerFor, otpFieldError } from '../auth/errors';
 import { verifySchema, verifyDefaults } from '../validation/login';
-import { colors, radius, shadow, space, type } from '../theme/tokens';
+import { colors, radius, space, surface, type } from '../theme/tokens';
 
 /** How long before another code can be requested. */
 const RESEND_SECONDS = 30;
@@ -344,7 +344,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
     padding: space.xl,
-    ...shadow.card,
+    ...surface.card,
   },
   resend: { alignSelf: 'center', paddingVertical: space.md, minHeight: 48, justifyContent: 'center' },
   resendText: { ...type.button, color: colors.link },

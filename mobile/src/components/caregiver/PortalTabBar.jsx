@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     paddingTop: space.sm,
     paddingHorizontal: space.sm,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: colors.fieldBorder,
+    borderTopColor: colors.border,
   },
   tab: {
     flex: 1,

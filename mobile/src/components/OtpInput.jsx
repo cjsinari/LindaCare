@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   box: {
     flex: 1,
     minHeight: BOX_HEIGHT,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: colors.fieldBorder,
     borderRadius: radius.md,
     backgroundColor: colors.field,

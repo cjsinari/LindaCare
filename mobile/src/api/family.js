@@ -73,8 +73,13 @@ const asCaregiver = (row) => (row ? {
  * The service's account notices, as the notification list shows them.
  *
  * Titles are written here rather than taken from the message, because the
- * message is an SMS body ("MzaziCare: we signed you out because…") and the
+ * message is an SMS body ("LindaCare: we signed you out because…") and the
  * brand prefix is noise once it is inside the app that *is* the brand.
+ *
+ * The prefix is matched under either brand name. Notices already written to
+ * the audit trail before the rename carry "MzaziCare:" and are not rewritten
+ * -- an audit row is a record of what was actually sent -- so a reader that
+ * only knew the new name would leave the old prefix sitting in the list.
  */
 const ACCOUNT_TITLES = {
   login_blocked: 'Sign-in blocked',
@@ -93,7 +98,7 @@ const asAccountNotification = (row) => ({
   sourceId: row.id,
   category: 'account',
   title: ACCOUNT_TITLES[row.type] || 'Account notice',
-  message: String(row.message || '').replace(/^MzaziCare:\s*/i, ''),
+  message: String(row.message || '').replace(/^(?:Linda|Mzazi)Care:\s*/i, ''),
   severity: row.severity ?? null,
   createdAt: row.createdAt ?? row.created_at,
   readAt: row.readAt ?? row.read_at ?? null,

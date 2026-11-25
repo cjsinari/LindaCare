@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 import Touchable from './Touchable';
-import { colors, oneui, shadow, space, type } from '../../theme/tokens';
+import { colors, oneui, space, surface, type } from '../../theme/tokens';
 
 /*
  * The One UI card, and the grouped list that is really the same thing.
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: oneui.radius.card,
     overflow: 'hidden',
-    ...shadow.card,
+    ...surface.card,
   },
   padded: { padding: space.lg + 2 },
 
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   },
   heading: { ...type.title, fontSize: 17, lineHeight: 24, color: colors.ink, flexShrink: 1 },
 
-  divider: { height: StyleSheet.hairlineWidth, backgroundColor: colors.fieldBorder },
+  divider: { height: StyleSheet.hairlineWidth, backgroundColor: colors.border },
 
   row: { flexDirection: 'row', alignItems: 'center', gap: space.md },
 

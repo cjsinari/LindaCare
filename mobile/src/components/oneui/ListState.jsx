@@ -94,7 +94,7 @@ export function ListEmpty({
 }) {
   return (
     <Card style={styles.state}>
-      <View style={[styles.icon, { backgroundColor: colors.field }]} importantForAccessibility="no">
+      <View style={[styles.icon, { backgroundColor: colors.surfaceSunken }]} importantForAccessibility="no">
         <Ionicons name={icon} size={24} color={colors.label} />
       </View>
       <Text style={styles.title} accessibilityRole="header">{title}</Text>

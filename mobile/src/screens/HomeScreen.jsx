@@ -4,7 +4,7 @@ import HeroHeader from '../components/HeroHeader';
 import Banner from '../components/Banner';
 import PrimaryButton from '../components/PrimaryButton';
 import { useAuth } from '../auth/AuthContext';
-import { colors, radius, shadow, space, type } from '../theme/tokens';
+import { colors, radius, space, surface, type } from '../theme/tokens';
 
 const ROLE_LABEL = { caregiver: 'Caregiver', family: 'Family member', administrator: 'Administrator' };
 
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     padding: space.xl,
     gap: space.sm,
-    ...shadow.card,
+    ...surface.card,
   },
   heading: { ...type.title, color: colors.ink },
   text: { ...type.body, color: colors.inkMuted },
