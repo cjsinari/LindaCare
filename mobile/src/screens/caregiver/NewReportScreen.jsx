@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import PortalShell from '../../components/caregiver/PortalShell';
 import Card, { Divider, SectionHeading } from '../../components/oneui/Card';
-import Chip, { RECIPIENT_STATUS } from '../../components/oneui/Chip';
+import Chip, { recipientStatus } from '../../components/oneui/Chip';
 import Avatar from '../../components/oneui/Avatar';
 import SearchField from '../../components/oneui/SearchField';
 import PillButton from '../../components/oneui/PillButton';
@@ -166,7 +166,7 @@ export default function NewReportScreen({ navigation }) {
             {filtered.length ? (
               <Card padded={false}>
                 {filtered.map((person, index) => {
-                  const statusInfo = RECIPIENT_STATUS[person.status] || RECIPIENT_STATUS.stable;
+                  const statusInfo = recipientStatus(person.status);
                   return (
                     <View key={person.id}>
                       {index > 0 ? <Divider inset={space.lg + 56} /> : null}

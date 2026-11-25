@@ -33,27 +33,82 @@ beforeEach(() => {
 });
 
 describe('deciding where the data comes from', () => {
-  it('uses the mock when the service has no care module', async () => {
-    api.authed.get.mockRejectedValueOnce(notFound());
+  /*
+   * The roster is not care-module data and is not faked.
+   *
+   * This is the regression test for the bug where a caregiver with one real
+   * assignment was shown the fixture's three invented patients on "My
+   * Assignments" while "Care Profiles" showed the real one. The caseload comes
+   * from GET /profiles, which auth-service has always answered and already
+   * scopes to this caregiver's active assignments.
+   */
+  it('reads the real caseload from the service when there is no care module', async () => {
+    api.authed.get
+      .mockRejectedValueOnce(notFound())                    // no care module
+      .mockResolvedValueOnce({
+        count: 1,
+        profiles: [{
+          id: 'p1',
+          fullName: 'George Tike',
+          homeAddress: 'Karen, Nairobi',
+          dateOfBirth: '1959-12-08',
+          medicalNotes: 'Takes a walk most mornings.',
+        }],
+      });
 
     const result = await care.assignments();
 
     expect(careApiSource()).toBe('mock');
-    expect(result.recipients.length).toBeGreaterThan(0);
-    // The probe is the only live call made: once it answers 404, nothing else
-    // is attempted against the service.
-    expect(api.authed.get).toHaveBeenCalledTimes(1);
-    expect(api.authed.get).toHaveBeenCalledWith('/care/health');
+    expect(api.authed.get).toHaveBeenNthCalledWith(1, '/care/health');
+    expect(api.authed.get).toHaveBeenNthCalledWith(2, '/profiles');
+
+    expect(result.recipients).toHaveLength(1);
+    expect(result.recipients[0].fullName).toBe('George Tike');
+    expect(result.recipients[0].address).toBe('Karen, Nairobi');
+  });
+
+  it('invents nothing about a person it only has a profile for', async () => {
+    api.authed.get
+      .mockRejectedValueOnce(notFound())
+      .mockResolvedValueOnce({
+        count: 1,
+        profiles: [{ id: 'p1', fullName: 'George Tike', medicalNotes: 'Walks daily.' }],
+      });
+
+    const [person] = (await care.assignments()).recipients;
+
+    // Every one of these is a claim the service is in no position to make, so
+    // each comes back absent for the screen to draw as absent. A `status` of
+    // 'stable' or a `visitCount` of 0 would read as an assessment nobody made.
+    expect(person.status).toBeNull();
+    expect(person.visitCount).toBeNull();
+    expect(person.lastVisitAt).toBeNull();
+    expect(person.since).toBeNull();
+    // Free text the family typed is not a list of coded conditions.
+    expect(person.conditions).toEqual([]);
+  });
+
+  it('does not show the fixture caseload to a caregiver who has a real one', async () => {
+    api.authed.get
+      .mockRejectedValueOnce(notFound())
+      .mockResolvedValueOnce({ count: 0, profiles: [] });
+
+    const result = await care.assignments();
+
+    expect(result.recipients).toEqual([]);
+    expect(result.count).toBe(0);
   });
 
   it('probes once and remembers the answer', async () => {
     api.authed.get.mockRejectedValueOnce(notFound());
+    api.authed.get.mockResolvedValue({ count: 0, profiles: [] });
 
     await care.assignments();
     await care.dashboard();
     await care.visits();
 
-    expect(api.authed.get).toHaveBeenCalledTimes(1);
+    const probes = api.authed.get.mock.calls.filter(([path]) => path === '/care/health');
+    expect(probes).toHaveLength(1);
   });
 
   it('uses the service when the care module is there', async () => {
@@ -88,12 +143,29 @@ describe('deciding where the data comes from', () => {
   it('falls back for a single route the module has not implemented yet', async () => {
     api.authed.get
       .mockResolvedValueOnce({ ok: true })        // the module is there
-      .mockRejectedValueOnce(notFound());         // but /care/assignments is not
+      .mockRejectedValueOnce(notFound())          // but /care/assignments is not
+      .mockResolvedValueOnce({ count: 1, profiles: [{ id: 'p1', fullName: 'George Tike' }] });
 
     const result = await care.assignments();
 
-    expect(result.recipients.length).toBeGreaterThan(0);
+    expect(result.recipients).toHaveLength(1);
     expect(careApiSource()).toBe('mock');
+  });
+
+  /*
+   * Whoever is on the list has to be openable from it. The fixture store has
+   * never heard of a real profile id and throws when asked, so without its own
+   * fallback, tapping your own assignment was an error screen.
+   */
+  it('opens a real assignment from the list', async () => {
+    api.authed.get
+      .mockRejectedValueOnce(notFound())
+      .mockResolvedValueOnce({ profile: { id: 'p1', fullName: 'George Tike' } });
+
+    const person = await care.recipient('p1');
+
+    expect(api.authed.get).toHaveBeenLastCalledWith('/profiles/p1');
+    expect(person.fullName).toBe('George Tike');
   });
 });
 
@@ -118,6 +190,18 @@ describe('pinned to mock', () => {
 
     expect(api.authed.get).not.toHaveBeenCalled();
     expect(result.counts.assigned).toBeGreaterThan(0);
+  });
+
+  /*
+   * A demo keeps the full fixture caseload. 'mock' means there may be no
+   * service at all behind the app, so there is no real roster to prefer --
+   * which is the distinction careApiMode exists to draw.
+   */
+  it('keeps the fixture caseload', async () => {
+    const result = await care.assignments();
+
+    expect(api.authed.get).not.toHaveBeenCalled();
+    expect(result.recipients.map((r) => r.fullName)).toContain('Margaret Wanjiku');
   });
 });
 

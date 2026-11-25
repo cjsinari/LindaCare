@@ -6,7 +6,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Sidebar from './Sidebar';
 import { usePortalChrome } from './PortalChrome';
-import { colors, oneui, space, surface, type, TOUCH_TARGET } from '../../theme/tokens';
+import {
+  colors, oneui, sidebarColors, space, surface, type, TOUCH_TARGET,
+} from '../../theme/tokens';
 
 /*
  * The frame every caregiver screen is drawn inside: the sidebar, the compact
@@ -136,8 +138,21 @@ export default function PortalShell({
       {wide ? <Sidebar navigation={navigation} active={active} /> : null}
 
       <View style={styles.column}>
+        {/*
+         * ── the navy band ──
+         *
+         * The status-bar inset, filled in navy rather than left white. It
+         * takes the sidebar's chrome navy rather than the hero navy, for the
+         * reason sidebarColors gives -- and because on a wide screen the
+         * sidebar is the strip immediately to its left, so any other value
+         * would put a seam across the top of the window.
+         *
+         * See oneui.topBand for why it is there and why it has a floor.
+         */}
+        <View style={[styles.topBand, { height: insets.top + oneui.topBand }]} />
+
         {/* ── the compact bar ── */}
-        <View style={[styles.bar, { paddingTop: insets.top, height: insets.top + oneui.barHeight }]}>
+        <View style={[styles.bar, { height: oneui.barHeight }]}>
           <Pressable
             onPress={onBack || toggle}
             style={styles.barButton}
@@ -163,16 +178,6 @@ export default function PortalShell({
           >
             {barTitle || title}
           </Animated.Text>
-
-          {/*
-           * "System online" is the service-reachability indicator from the
-           * mockups. The dot is never the only signal -- the words beside it
-           * say which state it is in -- so it survives a monochrome display.
-           */}
-          <View style={styles.status} accessible accessibilityLabel="System online">
-            <View style={styles.statusDot} />
-            <Text style={styles.statusText}>System online</Text>
-          </View>
         </View>
 
         {body}
@@ -201,6 +206,8 @@ const styles = StyleSheet.create({
   column: { flex: 1 },
   flex: { flex: 1 },
 
+  topBand: { backgroundColor: sidebarColors.surface },
+
   bar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -225,14 +232,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.ink,
     flex: 1,
+    // The bar used to end in a "System online" pill, which supplied this gap.
+    // It is gone, so the title has to stop short of the edge itself.
+    paddingRight: space.md,
   },
-
-  status: { flexDirection: 'row', alignItems: 'center', gap: space.xs + 1, paddingRight: space.md },
-  statusDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: colors.success },
-  // The dot carries the colour and the words carry the meaning. Printing the
-  // words in green as well made a routine "nothing is wrong" the brightest
-  // thing in the bar; the console does the same thing with its status pills.
-  statusText: { ...type.caption, fontSize: 11, color: colors.inkMuted },
 
   scrollContent: { paddingHorizontal: space.lg },
   staticHeader: { paddingHorizontal: space.lg },

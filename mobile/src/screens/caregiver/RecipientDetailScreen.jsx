@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import PortalShell from '../../components/caregiver/PortalShell';
 import CareNoteSheet from '../../components/caregiver/CareNoteSheet';
 import Card, { Divider, SectionHeading } from '../../components/oneui/Card';
-import Chip, { RECIPIENT_STATUS } from '../../components/oneui/Chip';
+import Chip, { recipientStatus } from '../../components/oneui/Chip';
 import Avatar from '../../components/oneui/Avatar';
 import PillButton from '../../components/oneui/PillButton';
 import Touchable from '../../components/oneui/Touchable';
@@ -51,7 +51,7 @@ export default function RecipientDetailScreen({ navigation, route }) {
   );
 
   const person = data;
-  const statusInfo = RECIPIENT_STATUS[person?.status] || RECIPIENT_STATUS.stable;
+  const statusInfo = recipientStatus(person?.status);
 
   const addNote = async ({ body, kind }) => {
     await care.addCareNote({

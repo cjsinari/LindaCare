@@ -1,6 +1,8 @@
 import { api } from './client';
-import { route } from './careSource';
+import { route, careApiMode } from './careSource';
+import { profiles as profilesApi } from './endpoints';
 import { mockCaregiverApi } from './mock/caregiverData';
+import { yearsOld } from '../utils/datetime';
 
 /*
  * Every call the caregiver screens make.
@@ -61,6 +63,113 @@ const asVisit = (row) => ({
 });
 
 /*
+ * ───────────────────── the roster, without a care module ─────────────────────
+ *
+ * ── The bug this exists to fix ──
+ *
+ * Who a caregiver is assigned to is not care-module data. It is in
+ * auth-service today, in `assignments`, and GET /profiles already answers it
+ * scoped to the caller -- resourceAccess.listAccessibleProfiles joins through
+ * active, in-window assignments and returns nothing else.
+ *
+ * Before this, "My Assignments" did not ask. The care module is not mounted,
+ * so `route` sent the whole call to the fixture, and a caregiver with one real
+ * assignment was shown three people who do not exist while "Care Profiles",
+ * two taps away, showed the one who does. Two screens, one account, two
+ * different answers to "who do I look after" -- and the fictional one was the
+ * screen you file a visit report from.
+ *
+ * ── Why this is not the mixing careSource.js warns about ──
+ *
+ * That warning is about a screen where the name is real and the visit count is
+ * invented, with no way to tell which is which. Nothing here is invented. The
+ * roster is real, and every fact the service does not have comes back `null`
+ * -- no status, no visit count, no last visit, no date the assignment began --
+ * for the screens to render as absent. An unknown shown as unknown is not the
+ * failure mode; a 'stable' nobody assessed would be.
+ *
+ * ── When it does and does not apply ──
+ *
+ * Only when the mode is 'auto' and the fallback happened because the care
+ * module answered 404. Pinned to 'mock' the app is a demo, possibly with no
+ * service behind it at all, and it keeps the full fixture caseload; see
+ * careApiMode.
+ */
+
+/** A GET /profiles row, as the caregiver screens read a recipient. */
+const asAssignedProfile = (row) => ({
+  id: row.id,
+  // The service has no assignment reference to show.
+  reference: null,
+  fullName: row.fullName ?? row.full_name,
+  age: yearsOld(row.dateOfBirth ?? row.date_of_birth),
+  dateOfBirth: row.dateOfBirth ?? row.date_of_birth ?? null,
+  // `medicalNotes` is one free-text field the family typed. It is not a list
+  // of coded conditions and must not be served as one.
+  conditions: [],
+  medicalNotes: row.medicalNotes ?? row.medical_notes ?? null,
+  // Null rather than 'stable'. A care status is a judgement somebody makes
+  // about a person, and no one has made this one.
+  status: null,
+  address: row.homeAddress ?? row.home_address ?? null,
+  since: null,
+  visitCount: null,
+  lastVisitAt: null,
+  medications: [],
+  careNotes: [],
+  emergencyContacts: [],
+});
+
+/**
+ * The caregiver's real caseload, from the service.
+ *
+ * `active` equals the count on purpose: /profiles only returns assignments
+ * that are active and inside their window, so every row here is an active one.
+ */
+async function rosterFromProfiles() {
+  const payload = await profilesApi.list();
+  const recipients = (payload.profiles ?? []).map(asAssignedProfile);
+  return {
+    count: payload.count ?? recipients.length,
+    active: recipients.length,
+    recipients,
+  };
+}
+
+/** The fixture caseload for a demo, the real one for a service with no care module. */
+const rosterFallback = () => (
+  careApiMode() === 'mock' ? mockCaregiverApi.assignments() : rosterFromProfiles()
+);
+
+/**
+ * A write, when the care data it would change does not exist.
+ *
+ * The fixture store can only accept a write about somebody it holds, and a
+ * real assignment is not one of its three invented patients -- so it answers
+ * "that care recipient is not on your list", which is now exactly backwards:
+ * they are the only person on it. The honest answer is that there is nowhere
+ * to file this yet, and it is said once here rather than guessed at by each
+ * screen's error banner.
+ *
+ * A demo keeps the fixture's own message, because in a demo it is true.
+ */
+const NO_CARE_MODULE =
+  'Visit reports and care notes need the care module, which is not running yet. Nothing was saved.';
+
+const writeFallback = async (run) => {
+  if (careApiMode() === 'mock') return run();
+  try {
+    return await run();
+  } catch (err) {
+    if (err?.code !== 'MOCK_FAILURE') throw err;
+    const replacement = new Error(NO_CARE_MODULE);
+    replacement.code = 'NO_CARE_MODULE';
+    replacement.status = 503;
+    throw replacement;
+  }
+};
+
+/*
  * ─────────────────────────── the calls ───────────────────────────
  */
 
@@ -87,7 +196,26 @@ export const care = {
         alerts: payload.alerts ?? [],
       };
     },
-    () => mockCaregiverApi.dashboard()
+    /*
+     * The same roster, so the dashboard and "My Assignments" cannot disagree
+     * about who this caregiver looks after -- which was half of the bug.
+     *
+     * Everything else on this screen genuinely is care-module data, so without
+     * the module it comes back empty rather than invented: no visits today, no
+     * alerts, no session risk. A caregiver sees their real people and an
+     * honestly empty day.
+     */
+    async () => {
+      if (careApiMode() === 'mock') return mockCaregiverApi.dashboard();
+      const { count, recipients } = await rosterFromProfiles();
+      return {
+        sessionRisk: null,
+        counts: { assigned: count, visitsToday: 0, completedToday: 0 },
+        recipients: recipients.map((r) => ({ ...r, nextVisitAt: null, nextVisitId: null })),
+        visits: [],
+        alerts: [],
+      };
+    }
   ),
 
   /**
@@ -108,12 +236,18 @@ export const care = {
         recipients,
       };
     },
-    () => mockCaregiverApi.assignments()
+    rosterFallback
   ),
 
   recipient: (id) => route(
     async () => asRecipient((await api.authed.get(`/care/recipients/${id}`)).recipient),
-    () => mockCaregiverApi.recipient(id)
+    // Whoever is on the list has to be openable from it. Without this the
+    // fixture store is asked for a real profile id it has never heard of and
+    // throws, so tapping your own assignment would be an error screen.
+    async () => {
+      if (careApiMode() === 'mock') return mockCaregiverApi.recipient(id);
+      return asAssignedProfile((await profilesApi.get(id)).profile);
+    }
   ),
 
   visits: (params = {}) => route(
@@ -133,28 +267,28 @@ export const care = {
   /** Tick or untick one task. The caller has already drawn the new state; see useOptimisticTasks. */
   setTask: (visitId, taskId, done) => route(
     async () => asVisit((await api.authed.post(`/care/visits/${visitId}/tasks/${taskId}`, { done })).visit),
-    () => mockCaregiverApi.setTask(visitId, taskId, done)
+    () => writeFallback(() => mockCaregiverApi.setTask(visitId, taskId, done))
   ),
 
   checkIn: (visitId) => route(
     async () => asVisit((await api.authed.post(`/care/visits/${visitId}/check-in`, {})).visit),
-    () => mockCaregiverApi.checkIn(visitId)
+    () => writeFallback(() => mockCaregiverApi.checkIn(visitId))
   ),
 
   checkOut: (visitId) => route(
     async () => asVisit((await api.authed.post(`/care/visits/${visitId}/check-out`, {})).visit),
-    () => mockCaregiverApi.checkOut(visitId)
+    () => writeFallback(() => mockCaregiverApi.checkOut(visitId))
   ),
 
   /** File a visit report. Closes the visit and appends its note to the care record. */
   submitReport: (payload) => route(
     async () => (await api.authed.post('/care/reports', payload)).report,
-    () => mockCaregiverApi.submitReport(payload)
+    () => writeFallback(() => mockCaregiverApi.submitReport(payload))
   ),
 
   /** A care note, or -- with kind: 'incident' -- an incident report. */
   addCareNote: (payload) => route(
     async () => (await api.authed.post(`/care/recipients/${payload.recipientId}/notes`, payload)).note,
-    () => mockCaregiverApi.addCareNote(payload)
+    () => writeFallback(() => mockCaregiverApi.addCareNote(payload))
   ),
 };

@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import PortalShell from '../../components/caregiver/PortalShell';
 import Card, { SectionHeading, Divider } from '../../components/oneui/Card';
-import Chip, { RECIPIENT_STATUS, VISIT_STATUS } from '../../components/oneui/Chip';
+import Chip, { recipientStatus, VISIT_STATUS } from '../../components/oneui/Chip';
 import Avatar from '../../components/oneui/Avatar';
 import StatTile from '../../components/oneui/StatTile';
 import PillButton from '../../components/oneui/PillButton';
@@ -184,7 +184,7 @@ export default function CaregiverHomeScreen({ navigation }) {
             decelerationRate="fast"
           >
             {recipients.map((person) => {
-              const statusInfo = RECIPIENT_STATUS[person.status] || RECIPIENT_STATUS.stable;
+              const statusInfo = recipientStatus(person.status);
               return (
                 <Card
                   key={person.id}

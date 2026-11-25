@@ -472,8 +472,7 @@ const styles = StyleSheet.create({
 
   body: {
     paddingHorizontal: space.xl,
-    // Pulls the toggle up over the header's lower edge, as in the mockups.
-    marginTop: -space.xl,
+    marginTop: space.lg,
     gap: space.lg,
   },
 

@@ -58,6 +58,22 @@ export function careApiSource() {
 }
 
 /**
+ * The mode that was asked for: 'auto', 'mock' or 'live'.
+ *
+ * `careApiSource` answers "where is this coming from"; this answers "why". The
+ * difference matters in exactly one place and it is not cosmetic. Falling back
+ * in 'auto' means *the care module* is missing -- the service is up, answering,
+ * and still holds the care profiles and assignments it always did. Being
+ * pinned to 'mock' means there may be no service at all.
+ *
+ * So the two call for different fallbacks, and caregiver.js uses this to tell
+ * them apart: see `rosterFromProfiles` there.
+ */
+export function careApiMode() {
+  return mode;
+}
+
+/**
  * Test seam: put the module back to a known mode.
  *
  * It sets the *mode*, not just the resolved source, because the two are not

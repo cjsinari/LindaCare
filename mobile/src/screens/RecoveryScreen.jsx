@@ -156,7 +156,7 @@ export default function RecoveryScreen({ navigation }) {
 const styles = StyleSheet.create({
   flex: { flex: 1, backgroundColor: colors.navy },
   scroll: { backgroundColor: colors.page, flexGrow: 1, paddingBottom: space.xxxl },
-  body: { paddingHorizontal: space.xl, marginTop: -space.xl, gap: space.lg },
+  body: { paddingHorizontal: space.xl, marginTop: space.lg, gap: space.lg },
   card: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
