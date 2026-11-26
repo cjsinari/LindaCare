@@ -106,9 +106,25 @@ export default function MapPage() {
 
             <div className="map">
               <MapContainer center={centre} zoom={points.length ? 5 : 6} scrollWheelZoom={false}>
+                {/*
+                  * referrerPolicy is not decoration here, it is what makes the map load.
+                  *
+                  * index.html sets `<meta name="referrer" content="same-origin">`, so the
+                  * browser sends no Referer at all on a cross-origin request. OpenStreetMap
+                  * answers a tile request carrying no Referer with an "Access blocked"
+                  * image in place of the map and says so in an `x-blocked` response header:
+                  * "No referer sent. Access denied." Every tile comes back as the same
+                  * 6725-byte warning graphic, which is what tiles the whole viewport.
+                  *
+                  * The document-wide policy is the right default for a security console and
+                  * stays. This overrides it for the tile images alone, and only as far as
+                  * the origin — the path an administrator is looking at is still never
+                  * sent, which is the part that actually mattered.
+                  */}
                 <TileLayer
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  referrerPolicy="strict-origin-when-cross-origin"
                   maxZoom={18}
                 />
 
