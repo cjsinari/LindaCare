@@ -175,4 +175,51 @@ async function verifyOtp(phone, purpose, code) {
   return { ok: true };
 }
 
-module.exports = { issueOtp, verifyOtp, MAX_ATTEMPTS };
+/**
+ * Record an OTP request for a number that is never going to receive a code.
+ *
+ * -- Why a row is written for a request that sends nothing --
+ *
+ * The silent paths in requestOtp (unknown number, unverified account, already
+ * registered, locked) returned the generic message and wrote nothing at all.
+ * That left the number distinguishable from a real account twice over. The
+ * per-phone budget in issueOtp counts rows in this table, so a number with no
+ * rows was never rate limited; and verifyOtp below finds no row for it, so a
+ * wrong code comes back as invalid_or_expired where a real account answers
+ * wrong_code with a count of the attempts it has left. Either difference
+ * answers the only question an attacker is asking.
+ *
+ * Writing the row settles both at once, because every rule in this file then
+ * applies to the number exactly as it applies to a real account: the same
+ * three-per-fifteen-minutes budget, the same five attempts, the same TTL, the
+ * same newest-code-wins rule. Nothing is sent, and nothing is sendable.
+ *
+ * The stored value is 32 random bytes as hex. That is the same 64 characters
+ * hashOtp produces, so safeEqual compares two equal-length buffers and never
+ * takes the length short circuit, and it is the digest of nothing, so none of
+ * the million codes a caller could submit can match it. The decoy cannot be
+ * verified by guessing it, only by exhausting it.
+ */
+async function issueDecoyOtp(phone, purpose) {
+  const { rows } = await pool.query(
+    `SELECT COUNT(*)::int AS n FROM otps
+     WHERE phone_number = $1 AND created_at > NOW() - make_interval(mins => $2::int)`,
+    [phone, WINDOW_MINUTES]
+  );
+  if (rows[0].n >= MAX_REQUESTS) return { ok: false, reason: 'rate_limited' };
+
+  // Purpose-scoped, exactly as issueOtp does it, so a decoy for one purpose
+  // never burns a live code the same number holds for another.
+  await pool.query(
+    `UPDATE otps SET is_used = TRUE WHERE phone_number = $1 AND purpose = $2 AND is_used = FALSE`,
+    [phone, purpose]
+  );
+  await pool.query(
+    `INSERT INTO otps (phone_number, otp_code, purpose, expires_at)
+     VALUES ($1, $2, $3, NOW() + make_interval(mins => $4::int))`,
+    [phone, crypto.randomBytes(32).toString('hex'), purpose, OTP_TTL_MINUTES]
+  );
+  return { ok: true };
+}
+
+module.exports = { issueOtp, issueDecoyOtp, verifyOtp, MAX_ATTEMPTS };
