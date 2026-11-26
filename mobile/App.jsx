@@ -7,6 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 
 import RootNavigator from './src/navigation/RootNavigator';
+import BrandSplash from './src/components/BrandSplash';
 import { AuthProvider, useAuth } from './src/auth/AuthContext';
 import { useAppFonts } from './src/theme/fonts';
 import { colors, space } from './src/theme/tokens';
@@ -78,19 +79,21 @@ function Shell() {
   const onLayout = useCallback(() => setLaidOut(true), []);
 
   /*
-   * Hidden from an effect, gated on both conditions.
+   * The native splash goes as soon as there is a frame to replace it with.
    *
-   * It cannot be hidden from onLayout alone: the restore usually finishes
-   * *after* the first layout, and the layout does not happen again when it
-   * does, so the splash would stay up for good. It cannot be hidden from the
-   * effect alone either -- that can run before anything has been drawn, which
-   * is a white flash between the splash and the first screen. So: the first
-   * layout says there is something to show, the restore says it is the right
-   * thing to show, and the splash goes when both are true.
+   * It used to wait for the session restore as well, which meant the whole
+   * wait happened behind an image Android had drawn before any of this ran --
+   * a navy rectangle with nothing on it, since app.json configures no splash
+   * image. BrandSplash now covers the rest of the wait, in the same navy, so
+   * the handover is invisible and the waiting part of it has the brand on it.
+   *
+   * It is still hidden from an effect rather than from onLayout directly: the
+   * effect runs after the frame has been committed, and hiding it inside the
+   * layout callback can beat the first paint, which is a white flash.
    */
   useEffect(() => {
-    if (laidOut && !isRestoring) SplashScreen.hideAsync().catch(() => {});
-  }, [laidOut, isRestoring]);
+    if (laidOut) SplashScreen.hideAsync().catch(() => {});
+  }, [laidOut]);
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.navy }} onLayout={onLayout}>
@@ -101,6 +104,10 @@ function Shell() {
         <RootNavigator />
       </NavigationContainer>
       {linkNotice ? <LinkNotice message={linkNotice} onDismiss={() => setLinkNotice(null)} /> : null}
+
+      {/* Over everything, and it removes itself once the session has resolved
+          and it has faded out. Last in the tree so nothing can draw above it. */}
+      <BrandSplash ready={laidOut && !isRestoring} />
     </View>
   );
 }

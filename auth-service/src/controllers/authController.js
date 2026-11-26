@@ -13,6 +13,7 @@ const deviceTrust = require('../services/deviceTrust');
 const stepUp = require('../services/stepUp');
 const accountActions = require('../services/accountActions');
 const velocity = require('../services/velocity');
+const probeGuard = require('../services/probeGuard');
 const notifier = require('../services/notifier');
 const pushTokens = require('../services/pushTokens');
 const geoVelocity = require('../services/geoVelocity');
@@ -276,16 +277,24 @@ async function requestOtp(req, res) {
   let phone;
   try { phone = toE164(data.phoneNumber); } catch { return res.status(400).json({ error: 'Invalid phone number' }); }
   const generic = { message: 'If this number is registered, a verification code has been sent.' };
+  // Every path that answers with the generic message WITHOUT issuing a code goes
+  // through here, so it is counted, audited and held to the same 3-per-15-minutes
+  // budget a real account gets. Without it an unknown number never hit 429 while a
+  // real one did, which let a caller tell the two apart.
+  const silent = async (reason) => {
+    const { limited } = await probeGuard.silentRequest({ phone, ip: req.ip, reason });
+    return limited ? otpIssueError(res, 'rate_limited') : res.status(200).json(generic);
+  };
   try {
     const { rows } = await pool.query(USER_BY_PHONE, [phone]);
     const user = rows[0];
-    if (!user) return res.status(200).json(generic);
+    if (!user) return silent('unknown_contact');
     if (data.purpose === 'login') {
-      if (!user.phone_verified) return res.status(200).json(generic);
+      if (!user.phone_verified) return silent('unverified_account');
       if (user.account_status === 'frozen') return res.status(403).json({ error: 'This account is frozen. Please contact support.', code: 'ACCOUNT_FROZEN' });
       if (user.account_status === 'suspended') return res.status(403).json({ error: 'This account is suspended. Please contact support.', code: 'ACCOUNT_SUSPENDED' });
-    } else if (user.phone_verified) return res.status(200).json(generic);
-    if (user.lock_seconds > 0) return res.status(200).json(generic);
+    } else if (user.phone_verified) return silent('already_registered');
+    if (user.lock_seconds > 0) return silent('account_locked');
     const otp = await issueOtp(phone, data.purpose);
     if (!otp.ok) return otpIssueError(res, otp.reason);
     return res.status(200).json(generic);

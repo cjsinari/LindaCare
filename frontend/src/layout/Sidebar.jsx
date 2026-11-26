@@ -34,7 +34,6 @@ export default function Sidebar({ open, onClose }) {
         aria-label="Console sections"
       >
         <div className="sidebar__head">
-          <div className="sidebar__mark" aria-hidden="true">MC</div>
           <div className="sidebar__brand">
             <span className="sidebar__name">LindaCare</span>
             <span className="sidebar__role">Security console</span>
