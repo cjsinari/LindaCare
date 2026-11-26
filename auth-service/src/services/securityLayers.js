@@ -39,6 +39,9 @@ const LAYERS = {
     'step_up_passed',
     'otp_failed',
     'otp_lockout',
+    'otp_unknown_contact',
+    'otp_probe_throttled',
+    'otp_enumeration_sweep',
   ],
   session: [
     'token_refreshed',

@@ -311,6 +311,7 @@ a:hover { text-decoration: underline; }
 .push { margin-left: auto; }
 .muted { color: var(--text-muted); }
 .secondary { color: var(--text-secondary); }
+.danger { color: var(--critical); }
 .small { font-size: var(--text-xs); }
 .nowrap { white-space: nowrap; }
 .tabular { font-variant-numeric: tabular-nums; }

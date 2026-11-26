@@ -586,7 +586,7 @@ async function exportEvents(req, res) {
     const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
 
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-    res.setHeader('Content-Disposition', `attachment; filename="mzazicare-events-${stamp}.csv"`);
+    res.setHeader('Content-Disposition', `attachment; filename="lindacare-events-${stamp}.csv"`);
     // The file is a download, never something a browser should render or reuse.
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Cache-Control', 'no-store');

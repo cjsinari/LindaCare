@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const pool = require('../config/db');
 const { sendOTP } = require('./sms');
+const { sendOtpEmail } = require('./mailer');
 
 const OTP_TTL_MINUTES = Number(process.env.OTP_TTL_MINUTES) || 5; // FR02
 const MAX_REQUESTS = 3;        // FR03: max OTP requests per phone...
@@ -41,9 +42,22 @@ function safeEqual(a, b) {
 /**
  * Create and send a new OTP. Enforces the per-phone rate limit using the otps
  * table itself, so the limit survives restarts and does not depend on Redis.
- * Returns { ok: true } | { ok: false, reason: 'rate_limited' | 'delivery_failed' }
+ * Returns { ok: true, channel } | { ok: false, reason: 'rate_limited' | 'delivery_failed' }
+ *
+ * -- The channel, and why the code is still keyed on the phone number --
+ *
+ * `channel` decides where the code is delivered; it does not change what the
+ * code is bound to. The otps row stays keyed on the account's phone number,
+ * because that is the account's identity here and because it keeps one rate
+ * limit, one attempt counter and one "newest code wins" rule per account
+ * however the code was delivered. Keying an emailed code on the email address
+ * instead would hand someone two independent budgets of attempts against the
+ * same account.
+ *
+ * This matters for recovery, where the phone is exactly what the person no
+ * longer has: the code is bound to their number and sent to their inbox.
  */
-async function issueOtp(phone, purpose) {
+async function issueOtp(phone, purpose, { channel = 'sms', email = null } = {}) {
   const { rows } = await pool.query(
     `SELECT COUNT(*)::int AS n FROM otps
      WHERE phone_number = $1 AND created_at > NOW() - make_interval(mins => $2::int)`,
@@ -84,17 +98,38 @@ async function issueOtp(phone, purpose) {
    * either way.
    */
   if (DEV_MODE) {
-    console.log(`[DEV] OTP for ${phone} (${purpose}): ${code}`);
-    return { ok: true };
+    /*
+     * The channel goes after the code, not inside the brackets.
+     *
+     * runtest.js scrapes this line to drive the end-to-end suite, with
+     * /\[DEV\] OTP for (\S+) \((\w+)\): (\d{6})/. Putting the channel in the
+     * bracketed group breaks that match, and the whole suite then fails on a
+     * missing OTP rather than on anything real.
+     */
+    console.log(`[DEV] OTP for ${phone} (${purpose}): ${code}`
+      + ` via ${channel}${email ? ` to ${email}` : ''}`);
+    return { ok: true, channel };
   }
 
   try {
-    await sendOTP(phone, code);
+    if (channel === 'email') {
+      /*
+       * No address is a configuration fault, not a delivery failure, and it
+       * must not fall back to SMS. The caller chose email because the person
+       * cannot receive a text; texting the code to the number they have lost
+       * would send a working credential to whoever holds that SIM now.
+       */
+      if (!email) throw new Error('an email channel was requested with no address');
+      await sendOtpEmail(email, code, purpose);
+    } else {
+      await sendOTP(phone, code);
+    }
   } catch (err) {
-    console.error('SMS delivery failed:', err.message); // NFR10: log, don't crash
+    // NFR10: log, don't crash.
+    console.error(`OTP delivery failed over ${channel}:`, err.message);
     return { ok: false, reason: 'delivery_failed' };
   }
-  return { ok: true };
+  return { ok: true, channel };
 }
 
 /**
@@ -140,4 +175,51 @@ async function verifyOtp(phone, purpose, code) {
   return { ok: true };
 }
 
-module.exports = { issueOtp, verifyOtp, MAX_ATTEMPTS };
+/**
+ * Record an OTP request for a number that is never going to receive a code.
+ *
+ * -- Why a row is written for a request that sends nothing --
+ *
+ * The silent paths in requestOtp (unknown number, unverified account, already
+ * registered, locked) returned the generic message and wrote nothing at all.
+ * That left the number distinguishable from a real account twice over. The
+ * per-phone budget in issueOtp counts rows in this table, so a number with no
+ * rows was never rate limited; and verifyOtp below finds no row for it, so a
+ * wrong code comes back as invalid_or_expired where a real account answers
+ * wrong_code with a count of the attempts it has left. Either difference
+ * answers the only question an attacker is asking.
+ *
+ * Writing the row settles both at once, because every rule in this file then
+ * applies to the number exactly as it applies to a real account: the same
+ * three-per-fifteen-minutes budget, the same five attempts, the same TTL, the
+ * same newest-code-wins rule. Nothing is sent, and nothing is sendable.
+ *
+ * The stored value is 32 random bytes as hex. That is the same 64 characters
+ * hashOtp produces, so safeEqual compares two equal-length buffers and never
+ * takes the length short circuit, and it is the digest of nothing, so none of
+ * the million codes a caller could submit can match it. The decoy cannot be
+ * verified by guessing it, only by exhausting it.
+ */
+async function issueDecoyOtp(phone, purpose) {
+  const { rows } = await pool.query(
+    `SELECT COUNT(*)::int AS n FROM otps
+     WHERE phone_number = $1 AND created_at > NOW() - make_interval(mins => $2::int)`,
+    [phone, WINDOW_MINUTES]
+  );
+  if (rows[0].n >= MAX_REQUESTS) return { ok: false, reason: 'rate_limited' };
+
+  // Purpose-scoped, exactly as issueOtp does it, so a decoy for one purpose
+  // never burns a live code the same number holds for another.
+  await pool.query(
+    `UPDATE otps SET is_used = TRUE WHERE phone_number = $1 AND purpose = $2 AND is_used = FALSE`,
+    [phone, purpose]
+  );
+  await pool.query(
+    `INSERT INTO otps (phone_number, otp_code, purpose, expires_at)
+     VALUES ($1, $2, $3, NOW() + make_interval(mins => $4::int))`,
+    [phone, crypto.randomBytes(32).toString('hex'), purpose, OTP_TTL_MINUTES]
+  );
+  return { ok: true };
+}
+
+module.exports = { issueOtp, issueDecoyOtp, verifyOtp, MAX_ATTEMPTS };

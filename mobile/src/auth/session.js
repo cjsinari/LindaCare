@@ -1,0 +1,301 @@
+import * as SecureStore from 'expo-secure-store';
+import * as Crypto from 'expo-crypto';
+import { readClaims } from './tokenClaims';
+
+/*
+ * Where the session lives.
+ *
+ * Two jobs, deliberately kept apart from everything else: it owns the tokens
+ * in memory, and it owns the one copy on disk. It makes no network calls, so
+ * api/client.js can import it without a cycle -- the refresh request lives
+ * there, and the tokens it rotates live here.
+ *
+ * ── Why expo-secure-store and not AsyncStorage ──
+ *
+ * AsyncStorage is an unencrypted SQLite file in the app's sandbox. On a rooted
+ * or jailbroken phone, in an `adb backup`, or in a cloud backup of the device,
+ * that file is readable, and a refresh token read out of it is a week of
+ * someone else's account. SecureStore puts it in the iOS Keychain and in
+ * Android's EncryptedSharedPreferences, keyed by the hardware-backed keystore,
+ * so the ciphertext in a backup is useless without the device.
+ *
+ * ── Why one item and not two ──
+ *
+ * The access and refresh tokens are stored as a single JSON item. Two items
+ * would be two writes, and a crash or a kill between them leaves an access
+ * token paired with a refresh token from the previous rotation -- a session
+ * that looks restorable, fails its first refresh, and signs the person out for
+ * no reason they can see. One write is atomic enough to make that impossible.
+ *
+ * The item also carries the small user object the service returns at sign-in,
+ * for one narrow purpose: a launch with no signal. See getStoredUser.
+ */
+
+const TOKENS_KEY = 'lindacare.session.v1';
+const DEVICE_KEY = 'lindacare.device.v1';
+
+// WHEN_UNLOCKED rather than the default: the tokens are only ever used while
+// someone is looking at the app, and this keeps them out of reach of a
+// background process on a locked phone.
+const OPTIONS = { keychainAccessible: SecureStore.WHEN_UNLOCKED };
+
+/*
+ * The tokens, in memory.
+ *
+ * Every request reads them from here, not from the keychain: a keychain read
+ * is a native round trip, and the interceptor would do one per request.
+ */
+let tokens = null;
+
+/** Called when the session is gone for good and the UI has to return to sign-in. */
+const listeners = new Set();
+
+/**
+ * Tell the app the session has ended.
+ *
+ * The reason reaches the sign-in screen as a sentence, because "you were
+ * signed out" with no explanation reads like a bug. A flagged session in
+ * particular is something the person needs to be told about.
+ */
+export function onSessionLost(listener) {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
+function emitSessionLost(reason) {
+  listeners.forEach((listener) => {
+    try {
+      listener(reason);
+    } catch (err) {
+      // A throwing listener must not stop the others from being told, or the
+      // app is left showing protected screens with no session behind them.
+      console.warn('session listener failed:', err?.message);
+    }
+  });
+}
+
+/**
+ * Told when the service changes who the signed-in person is -- today, only
+ * their role, read from a rotated token.
+ *
+ * A separate channel from onSessionLost on purpose. Losing the session swaps
+ * the whole app for the sign-in screen; a role change keeps the session and
+ * swaps one portal for the other. Folding them together would mean a role
+ * change signed people out, which is the behaviour this exists to avoid.
+ */
+const userListeners = new Set();
+
+export function onUserChanged(listener) {
+  userListeners.add(listener);
+  return () => userListeners.delete(listener);
+}
+
+function emitUserChanged(user) {
+  userListeners.forEach((listener) => {
+    try {
+      listener(user);
+    } catch (err) {
+      console.warn('user listener failed:', err?.message);
+    }
+  });
+}
+
+export function getAccessToken() {
+  return tokens?.accessToken || null;
+}
+
+export function getRefreshToken() {
+  return tokens?.refreshToken || null;
+}
+
+export function hasSession() {
+  return Boolean(tokens?.refreshToken);
+}
+
+/**
+ * The profile as it was at the last sign-in.
+ *
+ * Used only when the app launches with a valid session and cannot reach the
+ * service to confirm it. It is a cache, never the authority: anything that
+ * matters -- the account being frozen, a role change -- is enforced by the
+ * service on the next request it answers, not by this copy.
+ */
+export function getStoredUser() {
+  return tokens?.user || null;
+}
+
+/**
+ * Persist a freshly issued or freshly rotated pair.
+ *
+ * `user` is merged rather than overwritten, because the refresh endpoint
+ * answers with tokens alone. Assigning `next.user` straight across would erase
+ * the stored profile on the first silent refresh, and the next offline launch
+ * would have nothing to fall back on.
+ */
+export async function save(next) {
+  const previousUser = tokens?.user || null;
+  let user = next.user !== undefined ? next.user : previousUser;
+
+  /*
+   * A rotation can carry a changed role.
+   *
+   * The refresh endpoint answers with tokens alone, but the access token it
+   * signs carries the account's role as it is *now* (see tokenClaims.js). If
+   * that disagrees with what the app believes, the token wins -- it is the
+   * newer and the service's -- and the stored profile is corrected, so the
+   * next offline launch opens the right portal too.
+   *
+   * Only on a rotation: a sign-in already hands over a fresh user object from
+   * the service, and second-guessing it with a decoded claim would be the
+   * less authoritative copy overriding the more authoritative one.
+   */
+  let roleChanged = false;
+  if (next.user === undefined && user) {
+    const claims = readClaims(next.accessToken);
+    if (claims?.role && claims.role !== user.role) {
+      user = { ...user, role: claims.role };
+      roleChanged = true;
+    }
+  }
+
+  tokens = {
+    accessToken: next.accessToken,
+    refreshToken: next.refreshToken,
+    user,
+  };
+
+  if (roleChanged) emitUserChanged(user);
+  try {
+    await SecureStore.setItemAsync(TOKENS_KEY, JSON.stringify(tokens), OPTIONS);
+  } catch (err) {
+    /*
+     * The keychain refused the write. The session still works for as long as
+     * the app stays in memory, so this does not sign anyone out -- it only
+     * means the session will not survive a restart. Worth a log and not worth
+     * interrupting someone mid-task.
+     */
+    console.warn('Could not persist the session:', err?.message);
+  }
+}
+
+/**
+ * The role the current access token was signed with, or null.
+ *
+ * Issue #46 says the navigator is "chosen from the JWT role claim", and this
+ * is that claim. It is the role the service will authorise every request
+ * against until the next refresh -- the service reads `role` from the token
+ * in verifyToken, not from the database -- so choosing the portal from it
+ * means the screens mounted are always the ones the service will answer for.
+ */
+export function getTokenRole() {
+  return readClaims(tokens?.accessToken)?.role || null;
+}
+
+/**
+ * Replace the stored profile after the person edited it.
+ *
+ * Written straight through to the keychain, so an edit made while signed in is
+ * what the next offline launch shows. Leaving the old copy there would mean a
+ * relaunch on the bus shows yesterday's name until the first request lands.
+ */
+export async function updateStoredUser(user) {
+  if (!tokens) return;
+  tokens = { ...tokens, user: { ...(tokens.user || {}), ...user } };
+  try {
+    await SecureStore.setItemAsync(TOKENS_KEY, JSON.stringify(tokens), OPTIONS);
+  } catch (err) {
+    console.warn('Could not persist the updated profile:', err?.message);
+  }
+}
+
+/** Read the stored pair into memory. Returns true if there was one. */
+export async function load() {
+  try {
+    const raw = await SecureStore.getItemAsync(TOKENS_KEY, OPTIONS);
+    if (!raw) return false;
+    const parsed = JSON.parse(raw);
+    if (!parsed?.refreshToken) return false;
+    tokens = {
+      accessToken: parsed.accessToken || null,
+      refreshToken: parsed.refreshToken,
+      user: parsed.user || null,
+    };
+    return true;
+  } catch (err) {
+    // Corrupt or undecryptable: treat it as no session rather than crashing on
+    // launch, and drop it so the next launch is not the same failure again.
+    console.warn('Could not read the stored session:', err?.message);
+    tokens = null;
+    try { await SecureStore.deleteItemAsync(TOKENS_KEY, OPTIONS); } catch { /* nothing to do */ }
+    return false;
+  }
+}
+
+/**
+ * Forget the session.
+ *
+ * Memory first, disk second, and the disk failure is swallowed: whatever the
+ * keychain does, this process must not keep using the tokens. `notify` is
+ * false when the UI already knows -- a deliberate sign-out -- and true when
+ * the session was lost underneath it.
+ */
+export async function clear({ notify = false, reason } = {}) {
+  tokens = null;
+  try {
+    await SecureStore.deleteItemAsync(TOKENS_KEY, OPTIONS);
+  } catch (err) {
+    console.warn('Could not delete the stored session:', err?.message);
+  }
+  if (notify) emitSessionLost(reason);
+}
+
+/*
+ * The device fingerprint the service wants with every sign-in.
+ *
+ * It is what device trust is keyed on: a device that has passed a step-up once
+ * is remembered, so the next sign-in from it is not challenged again. That
+ * only works if the value is stable, so it is generated once and kept.
+ *
+ * Kept under its own key, and deliberately NOT removed by clear(): signing out
+ * is not the same as arriving on a new phone, and deleting it would make every
+ * sign-in after a sign-out look like a brand-new device and draw a step-up
+ * challenge the person has already answered.
+ *
+ * It does not survive reinstalling the app, because the keychain item goes with
+ * it on Android. That is the right failure: a reinstall genuinely cannot be
+ * distinguished from a new device, and the consequence is one extra SMS.
+ */
+let deviceId = null;
+
+export async function getDeviceFingerprint() {
+  if (deviceId) return deviceId;
+  try {
+    const stored = await SecureStore.getItemAsync(DEVICE_KEY, OPTIONS);
+    if (stored) {
+      deviceId = stored;
+      return deviceId;
+    }
+  } catch (err) {
+    console.warn('Could not read the device id:', err?.message);
+  }
+
+  const fresh = Crypto.randomUUID();
+  try {
+    await SecureStore.setItemAsync(DEVICE_KEY, fresh, OPTIONS);
+  } catch (err) {
+    // Unstored means the next launch generates another one and the device is
+    // challenged again. Still better than sending nothing: the service
+    // requires the field, so a missing value is a failed sign-in.
+    console.warn('Could not persist the device id:', err?.message);
+  }
+  deviceId = fresh;
+  return deviceId;
+}
+
+/** Test seam: drops the in-memory copies without touching the keychain. */
+export function __resetForTests() {
+  tokens = null;
+  deviceId = null;
+  listeners.clear();
+  userListeners.clear();
+}

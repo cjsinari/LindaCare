@@ -42,6 +42,11 @@ export default function EventsTable({
   extraQuery = {},
   showExport = true,
   readOnlyNote,
+  // Bumped by the caller to re-ask the service with the same query: the audit
+  // page's auto-refresh, which must not wait for a live event to arrive.
+  refreshKey = 0,
+  // The authorization columns: what was attempted, on what, and the verdict.
+  showResource = false,
 }) {
   const { filters, queryFor, clearFilters, activeFilters } = useFilters();
   const { revision } = useLive();
@@ -55,7 +60,7 @@ export default function EventsTable({
 
   const { data, error, loading, refreshing, reload } = useResource(
     ({ signal }) => eventsApi.list(query, { signal }),
-    [JSON.stringify(query), revision]
+    [JSON.stringify(query), revision, refreshKey]
   );
 
   const setPage = useCallback((next) => {
@@ -138,6 +143,8 @@ export default function EventsTable({
                     </button>
                   </th>
                 ))}
+                {showResource && <th>Action</th>}
+                {showResource && <th>Resource</th>}
                 <th>What happened</th>
                 <th>Outcome</th>
                 <th>Address</th>
@@ -163,6 +170,19 @@ export default function EventsTable({
                       </div>
                     ) : <span className="muted">—</span>}
                   </td>
+                  {showResource && <td className="nowrap">{event.action || <span className="muted">—</span>}</td>}
+                  {showResource && (
+                    <td>
+                      {event.resourceType ? (
+                        <div className="cell-stack">
+                          <span>{String(event.resourceType).replace(/_/g, ' ')}</span>
+                          <span className="mono small secondary" title={event.resourceId || 'No record: the id did not match one'}>
+                            {event.resourceId || 'no record'}
+                          </span>
+                        </div>
+                      ) : <span className="muted">—</span>}
+                    </td>
+                  )}
                   <td className="cell-explain">{event.explanation}</td>
                   <td>
                     <div className="cell-stack">

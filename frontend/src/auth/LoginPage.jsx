@@ -54,9 +54,8 @@ export default function LoginPage() {
     <main className="login">
       <div className="login__panel">
         <header className="login__head">
-          <div className="login__mark" aria-hidden="true">MC</div>
           <div>
-            <h1 className="login__title">MzaziCare</h1>
+            <h1 className="login__title">LindaCare</h1>
             <p className="login__subtitle">Security console</p>
           </div>
         </header>

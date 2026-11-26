@@ -1,0 +1,180 @@
+import { api } from './client';
+
+/*
+ * Every call the app makes, named once.
+ *
+ * Screens ask for `auth.register(values)` rather than assembling a path and a
+ * body. That keeps the contract of the service in one file, and it keeps paths
+ * out of the render tree where a typo becomes a 404 nobody notices until a
+ * form silently stops working.
+ *
+ * Note the paths carry no version prefix. Issues #41 and #42 specify
+ * POST /v1/auth/register and POST /v1/auth/login, but the service mounts its
+ * router at /auth (auth-service/index.js). The running service wins; if a /v1
+ * prefix is added later it belongs in the base URL, not sprinkled through this
+ * file.
+ *
+ * -- There is no /auth/login --
+ *
+ * Sign-in is strictly OTP, so it is two calls rather than one. `requestOtp`
+ * sends the code and `verifyLogin` exchanges it for a session. A single
+ * endpoint taking a phone number and a password would need a password, and the
+ * service has none by design.
+ */
+
+export const auth = {
+  /**
+   * Create a pending account and send the first verification code.
+   *
+   * Returns `{ message }`, not a session -- the account does not exist in any
+   * usable sense until the code is entered.
+   */
+  register: (values) => api.post('/auth/register', values),
+
+  /**
+   * Ask for a code. Shared by registration and sign-in.
+   *
+   * Always answers 200 with the same sentence whether or not the number is
+   * registered, so the response cannot be used to find out who has an account.
+   * That is why the login screen moves to the code entry regardless.
+   */
+  requestOtp: (phoneNumber, purpose) =>
+    api.post('/auth/otp/request', { phoneNumber, purpose }),
+
+  /** Finish registration. Returns a session and trusts the device. */
+  verifyRegistration: ({ phoneNumber, otp, deviceFingerprint }) =>
+    api.post('/auth/register/verify', { phoneNumber, otp, deviceFingerprint }),
+
+  /**
+   * Finish signing in.
+   *
+   * Returns either a session, or `{ status: 'step_up_required', challengeId }`
+   * when the risk engine is not satisfied with the attempt -- an unrecognised
+   * device, a sign-in from an implausible place. The second code goes through
+   * `verifyStepUp`, which is why the screen has to read `status` before it
+   * assumes it has tokens.
+   */
+  verifyLogin: ({ phoneNumber, otp, deviceFingerprint }) =>
+    api.post('/auth/login/verify', { phoneNumber, otp, deviceFingerprint }),
+
+  /**
+   * Start account recovery: send a code to a contact already on the account.
+   *
+   * `contact` is an email address or a phone number — whichever the person
+   * still has. Always answers 200 with the same sentence, so neither this call
+   * nor its timing says whether an account exists. The `channel` it returns is
+   * derived from what was typed, not from what was found, so it is safe to
+   * show and is what tells the next screen where to say the code went.
+   */
+  requestRecovery: (contact) => api.post('/auth/recovery/request', { contact }),
+
+  /**
+   * Finish recovery: prove the contact and get the account back.
+   *
+   * Returns a session like a sign-in does. There is no step-up, because the
+   * code just answered went to a different channel from the one being
+   * recovered and so already is the second factor.
+   */
+  verifyRecovery: ({ contact, otp, deviceFingerprint }) =>
+    api.post('/auth/recovery/verify', { contact, otp, deviceFingerprint }),
+
+  /** Answer a step-up challenge. Trusting the device makes it a one-off. */
+  verifyStepUp: ({ challengeId, otp, deviceFingerprint, trustDevice = true, deviceLabel }) =>
+    api.post('/auth/step-up/verify', {
+      challengeId, otp, deviceFingerprint, trustDevice, deviceLabel,
+    }),
+
+  /** Who the current session belongs to. The call session restore is proved by. */
+  me: () => api.authed.get('/auth/me'),
+
+  /**
+   * End the session on the service, not just on the phone.
+   *
+   * Deliberately an authenticated call: the service revokes the session the
+   * access token names, which is what makes the refresh token useless to
+   * anyone who kept a copy.
+   */
+  logout: () => api.authed.post('/auth/logout'),
+};
+
+/*
+ * The signed-in person's own account (issue #46).
+ *
+ * None of these takes a user id. The service acts on whoever the access token
+ * names, so there is nothing here that could be pointed at somebody else's
+ * account -- and nothing for a screen to get wrong about whose it is.
+ */
+export const account = {
+  /** Change the display name. Returns `{ user }`, the same shape as /auth/me. */
+  updateProfile: ({ fullName }) => api.authed.patch('/auth/me', { fullName }),
+
+  /**
+   * Start changing the phone number. The service sends one code to the number
+   * on the account and one to the new number; both are needed to finish.
+   * Returns the two numbers masked, for the screen to say where each code went.
+   */
+  requestPhoneChange: (phoneNumber) => api.authed.post('/auth/me/phone/request', { phoneNumber }),
+
+  /**
+   * Finish it. A wrong code is a 422, not a 401, so the refresh interceptor
+   * leaves it alone: a replayed code check would spend a second attempt on a
+   * code the person typed once.
+   */
+  verifyPhoneChange: ({ phoneNumber, currentCode, newCode }) =>
+    api.authed.post('/auth/me/phone/verify', { phoneNumber, currentCode, newCode }),
+
+  /** `{ preferences: { push, categories: [{ key, label, hint, enabled }], alwaysOn } }` */
+  getPreferences: () => api.authed.get('/auth/me/preferences'),
+
+  /** `changes` is `{ push?, categories?: { [key]: enabled } }`. */
+  updatePreferences: (changes) => api.authed.put('/auth/me/preferences', changes),
+
+  registerPushToken: ({ token, provider, platform }) =>
+    api.authed.post('/auth/push-tokens', { token, provider, platform }),
+
+  unregisterPushToken: (token) => api.authed.delete('/auth/push-tokens', { token }),
+};
+
+/*
+ * Care profiles: the records the service's authorization layer protects
+ * (auth-service/src/routes/profileRoutes.js).
+ *
+ * The app decides nothing here. Who may read, change or share a profile is
+ * answered by the service on every call -- owner, assigned caregiver, or a 404
+ * that does not say which -- and these functions only carry the question.
+ *
+ * Profile shape: `{ id, fullName, homeAddress, dateOfBirth, medicalNotes,
+ * createdAt, updatedAt, accessVia }`, where `accessVia` is 'family_owner' or
+ * 'caregiver_assignment'.
+ */
+const profilePath = (id) => `/profiles/${encodeURIComponent(String(id))}`;
+
+export const profiles = {
+  /** `{ count, profiles }`, scoped by the service to what this account may read. */
+  list: () => api.authed.get('/profiles'),
+
+  /** `{ profile }`. Family only. `values` is `{ fullName, homeAddress?, dateOfBirth?, medicalNotes? }`. */
+  create: (values) => api.authed.post('/profiles', values),
+
+  /** `{ profile }`. A profile you may not see is a 404, the same as one that does not exist. */
+  get: (id) => api.authed.get(profilePath(id)),
+
+  /** `{ profile }`. Owner only; send only the fields that changed. */
+  update: (id, changes) => api.authed.patch(profilePath(id), changes),
+
+  /** `{ message }`. Owner only. The care team goes with it. */
+  remove: (id) => api.authed.delete(profilePath(id)),
+
+  /** `{ assignments: [{ id, status, startDate, endDate, caregiver: { id, fullName, phoneNumber } }] }` */
+  listAssignments: (id) => api.authed.get(`${profilePath(id)}/assignments`),
+
+  /** `{ assignment }`. The number must belong to an active, verified caregiver. */
+  assign: (id, { caregiverPhone, startDate }) =>
+    api.authed.post(`${profilePath(id)}/assignments`, {
+      caregiverPhone, ...(startDate && { startDate }),
+    }),
+
+  /** `{ message }`. Ends access; the service keeps the dated record. */
+  endAssignment: (id, assignmentId) =>
+    api.authed.delete(`${profilePath(id)}/assignments/${encodeURIComponent(String(assignmentId))}`),
+};

@@ -34,7 +34,7 @@ export default function DashboardLayout() {
   useEffect(() => setNavOpen(false), [location.pathname]);
 
   useEffect(() => {
-    document.title = entry ? `${entry.title} · MzaziCare Security` : 'MzaziCare Security';
+    document.title = entry ? `${entry.title} · LindaCare Security` : 'LindaCare Security';
   }, [entry]);
 
   // Escape closes the slide-over. A scrim is unreachable by keyboard, so

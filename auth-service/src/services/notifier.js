@@ -19,7 +19,7 @@ const { sendSecurityAlert } = require('../utils/sms');
  *
  * What messages may contain:
  *  - No user-supplied text (e.g. device labels): whoever passed a step-up
- *    controls it and could use it to send phishing under the MzaziCare name.
+ *    controls it and could use it to send phishing under the LindaCare name.
  *  - No authentication material (codes, tokens, session IDs).
  *  - Admin alerts identify the account only by a masked phone number; the full
  *    record is in the audit log, behind admin authentication, not in an SMS.
@@ -28,55 +28,84 @@ const DEV_MODE = process.env.OTP_DEV_MODE === 'true' && process.env.NODE_ENV !==
 const DEFAULT_COOLDOWN = Number(process.env.NOTIFY_COOLDOWN_SECONDS) || 900;
 const ADMIN_SEVERITIES = (process.env.ADMIN_ALERT_SEVERITIES || 'critical')
   .split(',').map((s) => s.trim()).filter(Boolean);
-const SUPPORT = 'If this was not you, contact MzaziCare support.';
+const SUPPORT = 'If this was not you, contact LindaCare support.';
 
 const TEMPLATES = {
   login_blocked: {
     severity: 'critical', cooldown: 0,   // always sent: the account has just been frozen
-    text: (v) => `MzaziCare: we blocked a sign-in to your account and locked it as a precaution. ` +
+    text: (v) => `LindaCare: we blocked a sign-in to your account and locked it as a precaution. ` +
       `${v.explanation || ''} If this was you, contact support to restore access.`.replace(/\s+/g, ' '),
     admin: () => 'high-risk sign-in blocked and account frozen',
   },
   session_flagged_geo: {
     severity: 'critical',
-    text: (v) => `MzaziCare: we signed you out because your session was used from ${v.to} shortly ` +
+    text: (v) => `LindaCare: we signed you out because your session was used from ${v.to} shortly ` +
       `after ${v.from}. Please sign in again. ${SUPPORT}`,
     admin: (v) => `session ended for impossible travel (${v.from} -> ${v.to})`,
   },
   session_flagged_api_velocity: {
     severity: 'critical',
-    text: () => `MzaziCare: we signed you out because your session made an unusually high number of ` +
+    text: () => `LindaCare: we signed you out because your session made an unusually high number of ` +
       `requests. Please sign in again. ${SUPPORT}`,
     admin: () => 'session ended for high API request velocity',
   },
   impossible_travel_login: {
     severity: 'high',
-    text: (v) => `MzaziCare: a sign-in attempt from ${v.to} needed extra verification because it was ` +
+    text: (v) => `LindaCare: a sign-in attempt from ${v.to} needed extra verification because it was ` +
       `too far from where you were last signed in (${v.from}). ${SUPPORT}`,
     admin: (v) => `sign-in challenged for impossible travel (${v.from} -> ${v.to})`,
   },
   new_device_trusted: {
     severity: 'medium',
-    text: () => `MzaziCare: a new device was verified and added to your account. ${SUPPORT} ` +
+    text: () => `LindaCare: a new device was verified and added to your account. ${SUPPORT} ` +
       `You can remove devices in your account settings.`,
     admin: () => 'new device trusted',
   },
+  /*
+   * Sent to the number the account USED to have, never to the new one.
+   *
+   * Whoever made the change already knows about it. The person who needs this
+   * message is the one who did not make it -- an owner whose session was
+   * taken -- and the only number that still reaches them is the old one.
+   * deliver() honours `sendTo` for exactly this case.
+   */
+  phone_changed: {
+    severity: 'medium', cooldown: 0,
+    // The new number is masked: the old number may have been recycled to a
+    // stranger, who has no business learning the account's new one.
+    text: (v) => `LindaCare: the phone number on your account was changed to ${v.newNumber}. ${SUPPORT}`,
+    admin: () => 'account phone number changed',
+  },
   account_frozen: {
     severity: 'high', cooldown: 0,   // always sent: the account has just lost access
-    text: () => `MzaziCare: your account has been locked by our security team and you have been ` +
-      `signed out. Contact MzaziCare support to restore access.`,
+    text: () => `LindaCare: your account has been locked by our security team and you have been ` +
+      `signed out. Contact LindaCare support to restore access.`,
     admin: () => 'account frozen by an administrator',
   },
   account_restored: {
     severity: 'medium', cooldown: 0,
-    text: () => `MzaziCare: access to your account has been restored. You can sign in again. ${SUPPORT}`,
+    text: () => `LindaCare: access to your account has been restored. You can sign in again. ${SUPPORT}`,
     admin: () => 'account access restored by an administrator',
   },
   otp_lockout: {
     severity: 'medium',
-    text: (v) => `MzaziCare: your account was locked for ${v.minutes || 15} minutes after several ` +
+    text: (v) => `LindaCare: your account was locked for ${v.minutes || 15} minutes after several ` +
       `incorrect verification codes. If you did not try to sign in, someone may be trying to access it.`,
     admin: () => 'account locked after repeated incorrect codes',
+  },
+  /*
+   * Always sent, and never throttled.
+   *
+   * Someone has just regained access to this account without using the phone
+   * it signs in with, which is both the legitimate purpose of recovery and the
+   * shape of a takeover. If it was not the owner, this message is the only
+   * chance they have to notice.
+   */
+  account_recovered: {
+    severity: 'high', cooldown: 0,
+    text: (v) => `LindaCare: access to your account was restored using a code sent to your ` +
+      `registered ${v.channel || 'contact'}. ${SUPPORT}`,
+    admin: (v) => `account access recovered via ${v.channel || 'a registered contact'}`,
   },
 };
 
@@ -146,7 +175,9 @@ async function deliver(userId, eventType, vars) {
   const cooldown = template.cooldown ?? DEFAULT_COOLDOWN;
 
   const { rows } = await pool.query('SELECT phone_number FROM users WHERE id = $1', [userId]);
-  const phone = rows[0]?.phone_number;
+  // `sendTo` overrides the account's current number for the one message that
+  // must reach a number the account no longer has (phone_changed).
+  const phone = vars.sendTo || rows[0]?.phone_number;
 
   const result = {
     user: await sendOne({
@@ -162,7 +193,7 @@ async function deliver(userId, eventType, vars) {
        WHERE role = 'administrator' AND account_status = 'active' AND phone_verified = TRUE AND id <> $1`,
       [userId]
     );
-    const message = `MzaziCare admin alert [${template.severity}]: ${template.admin(vars)} on account ` +
+    const message = `LindaCare admin alert [${template.severity}]: ${template.admin(vars)} on account ` +
       `${maskPhone(phone)}. Review the audit log for details.`;
     for (const admin of admins) {
       result.admins.push(await sendOne({
