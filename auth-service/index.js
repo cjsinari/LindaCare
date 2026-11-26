@@ -102,7 +102,7 @@ app.use(cors({
     // does not log an error for something working as intended.
     return callback(null, false);
   },
-  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   // The dashboard's export reads the filename the service chose.
   exposedHeaders: ['Content-Disposition', 'Retry-After'],
