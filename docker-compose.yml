@@ -14,7 +14,7 @@ services:
       POSTGRES_USER: ${DB_USER:-lindacare}
       POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql
       # *.sql files here run once, on an empty data volume, in name order.
       - ./deploy/db/initdb:/docker-entrypoint-initdb.d:ro
     healthcheck:
