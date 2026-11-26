@@ -322,4 +322,6 @@ Every score comes with a plain-language reason, for example *"Flagged as medium 
 
 ## Author
 
-CJ Sinari ([@cjsinari](https://github.com/cjsinari)), Strathmore University, Nairobi.
+Cyril-John Sinari ([@cjsinari](https://github.com/cjsinari))
+Bsc. Informatics and Computer Science, 2026
+Strathmore University
