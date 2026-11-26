@@ -1,51 +1,61 @@
 {
   "features": [
     "login_hour",
-    "login_day_of_week",
     "time_deviation",
     "is_known_country",
     "is_known_city",
-    "is_foreign_login",
-    "location_anomaly_score",
-    "is_known_device",
     "login_velocity"
   ],
   "contamination": 0.0909,
   "n_estimators": 200,
-  "max_features": 0.5,
+  "max_features": 0.8,
   "sklearn_version": "1.9.1",
-  "trained_on": "2026-10-10T17:43:58.715734",
+  "trained_on": "2026-10-29T16:43:31.617037",
   "training_rows": 12999,
   "dataset_source": "synthetic_anomaly_dataset.parquet (RBA baselines + calibrated synthetic injections)",
   "test_metrics": {
-    "precision": 0.7545,
-    "recall": 0.7085,
-    "f1_score": 0.7308,
-    "false_positive_rate": 0.023
+    "precision": 0.5964,
+    "recall": 0.5559,
+    "f1_score": 0.5754,
+    "false_positive_rate": 0.0376
+  },
+  "tier_metrics": {
+    "block": {
+      "precision": 0.9,
+      "recall": 0.2441,
+      "false_block_rate": 0.0027,
+      "governing_metric": "precision \u2014 a false block locks a real user out of their account"
+    },
+    "escalation": {
+      "precision": 0.5964,
+      "recall": 0.5559,
+      "false_escalation_rate": 0.0376,
+      "governing_metric": "recall \u2014 a step-up challenge costs the user one extra OTP"
+    }
   },
   "risk_calibration": {
-    "d_low": -0.21210197912759332,
-    "d_high": 0.12835244121014378
+    "d_low": -0.13424226345792878,
+    "d_high": 0.19272683785465208
   },
   "risk_thresholds": {
-    "allow_max": 38,
-    "step_up_max": 70,
-    "basis": "Model decision boundary maps to risk 37.7; allow_max chosen from a training-set sweep, evaluated once on the test set."
+    "allow_max": 58.9,
+    "step_up_max": 88,
+    "basis": "allow_max is the model's own decision boundary (decision score 0 maps to risk 58.9), so escalation and predict() are the same decision. step_up_max is the highest value that still blocks 100% of multi-signal (combined) anomalies, chosen from a training-set sweep."
   },
   "explanation_cutoffs": {
-    "time_deviation": 8.4,
+    "time_deviation": 8.5,
     "login_velocity": 3.0
   },
   "response_bands_test": {
     "normal": {
-      "low (allow)": 97.8,
-      "medium (step-up)": 2.2,
-      "high (block)": 0.0
+      "low (allow)": 96.2,
+      "medium (step-up)": 3.5,
+      "high (block)": 0.3
     },
     "anomaly": {
-      "low (allow)": 29.8,
-      "medium (step-up)": 40.0,
-      "high (block)": 30.2
+      "low (allow)": 44.4,
+      "medium (step-up)": 31.2,
+      "high (block)": 24.4
     }
   },
   "detection_by_type": [
@@ -58,117 +68,123 @@
     {
       "anomaly_type": "device",
       "count": 57,
-      "detected": 47,
-      "detection_rate": 82.5
+      "detected": 3,
+      "detection_rate": 5.3
     },
     {
       "anomaly_type": "location",
-      "count": 49,
-      "detected": 49,
-      "detection_rate": 100.0
+      "count": 61,
+      "detected": 36,
+      "detection_rate": 59.0
     },
     {
       "anomaly_type": "time",
-      "count": 77,
-      "detected": 14,
-      "detection_rate": 18.2
+      "count": 63,
+      "detected": 11,
+      "detection_rate": 17.5
     },
     {
       "anomaly_type": "velocity",
-      "count": 53,
-      "detected": 40,
-      "detection_rate": 75.5
+      "count": 55,
+      "detected": 55,
+      "detection_rate": 100.0
     }
   ],
   "detection_by_severity": [
     {
       "severity": "mild",
-      "count": 163,
-      "detected": 102,
-      "avg_risk_score": 46.2,
-      "detection_rate": 62.6
+      "count": 143,
+      "detected": 60,
+      "avg_risk_score": 48.9,
+      "detection_rate": 42.0
     },
     {
       "severity": "moderate",
-      "count": 76,
-      "detected": 56,
-      "avg_risk_score": 60.9,
-      "detection_rate": 73.7
+      "count": 91,
+      "detected": 54,
+      "avg_risk_score": 63.3,
+      "detection_rate": 59.3
     },
     {
       "severity": "severe",
-      "count": 56,
-      "detected": 51,
-      "avg_risk_score": 71.4,
-      "detection_rate": 91.1
+      "count": 61,
+      "detected": 50,
+      "avg_risk_score": 75.2,
+      "detection_rate": 82.0
     }
   ],
   "model_comparison": [
     {
       "model": "Isolation Forest",
-      "precision": 0.7545126353790613,
-      "recall": 0.7084745762711865,
-      "f1_score": 0.7307692307692307,
-      "false_positive_rate": 0.023011844331641287
+      "precision": 0.5963636363636363,
+      "recall": 0.5559322033898305,
+      "f1_score": 0.5754385964912281,
+      "false_positive_rate": 0.03756345177664975
     },
     {
       "model": "One-Class SVM",
-      "precision": 0.703971119133574,
-      "recall": 0.6610169491525424,
-      "f1_score": 0.6818181818181818,
-      "false_positive_rate": 0.02774957698815567
+      "precision": 0.49469964664310956,
+      "recall": 0.4745762711864407,
+      "f1_score": 0.4844290657439446,
+      "false_positive_rate": 0.048392554991539764
     },
     {
       "model": "Local Outlier Factor",
-      "precision": 0.17434210526315788,
-      "recall": 0.17966101694915254,
-      "f1_score": 0.17696160267111852,
-      "false_positive_rate": 0.08494077834179357
+      "precision": 0.13395638629283488,
+      "recall": 0.14576271186440679,
+      "f1_score": 0.1396103896103896,
+      "false_positive_rate": 0.09407783417935703
     },
     {
       "model": "Elliptic Envelope",
-      "precision": 0.8181818181818182,
-      "recall": 0.7932203389830509,
-      "f1_score": 0.8055077452667814,
-      "false_positive_rate": 0.017597292724196276
+      "precision": 0.5310344827586206,
+      "recall": 0.5220338983050847,
+      "f1_score": 0.5264957264957265,
+      "false_positive_rate": 0.046023688663282575
     }
   ],
   "detection_by_type_all_models": [
     {
       "anomaly_type": "combined",
       "Isolation Forest": 100.0,
-      "One-Class SVM": 88.13559322033898,
-      "Local Outlier Factor": 25.423728813559322,
+      "One-Class SVM": 83.05084745762711,
+      "Local Outlier Factor": 22.033898305084744,
       "Elliptic Envelope": 100.0
     },
     {
       "anomaly_type": "device",
-      "Isolation Forest": 82.45614035087719,
-      "One-Class SVM": 75.43859649122807,
-      "Local Outlier Factor": 10.526315789473683,
-      "Elliptic Envelope": 100.0
+      "Isolation Forest": 5.263157894736842,
+      "One-Class SVM": 5.263157894736842,
+      "Local Outlier Factor": 7.017543859649122,
+      "Elliptic Envelope": 1.7543859649122806
     },
     {
       "anomaly_type": "location",
-      "Isolation Forest": 100.0,
-      "One-Class SVM": 100.0,
-      "Local Outlier Factor": 26.53061224489796,
-      "Elliptic Envelope": 100.0
+      "Isolation Forest": 59.01639344262295,
+      "One-Class SVM": 49.18032786885246,
+      "Local Outlier Factor": 8.19672131147541,
+      "Elliptic Envelope": 19.672131147540984
     },
     {
       "anomaly_type": "time",
-      "Isolation Forest": 18.181818181818183,
-      "One-Class SVM": 18.181818181818183,
+      "Isolation Forest": 17.46031746031746,
+      "One-Class SVM": 20.634920634920633,
       "Local Outlier Factor": 14.285714285714285,
-      "Elliptic Envelope": 20.77922077922078
+      "Elliptic Envelope": 42.857142857142854
     },
     {
       "anomaly_type": "velocity",
-      "Isolation Forest": 75.47169811320755,
-      "One-Class SVM": 69.81132075471697,
-      "Local Outlier Factor": 15.09433962264151,
+      "Isolation Forest": 100.0,
+      "One-Class SVM": 81.81818181818183,
+      "Local Outlier Factor": 21.818181818181817,
       "Elliptic Envelope": 100.0
     }
   ],
-  "selection_rationale": "Isolation Forest (max_features=0.5) selected over Elliptic Envelope despite marginally lower precision/recall, due to: no distributional assumptions required, better computational scalability for real-time inference, and established use in prior authentication anomaly detection literature."
+  "excluded_features": {
+    "is_known_device": "Removed: device-only anomalies are indistinguishable from benign new-device logins in feature space. Delegated to the auth-service new-device step-up rule. Still sent in the /score payload so the explanation text can reference it.",
+    "is_foreign_login": "Removed: exact complement of is_known_country.",
+    "location_anomaly_score": "Removed: derived as is_foreign_login + (1 - is_known_city).",
+    "login_day_of_week": "Removed: constant per user in the synthetic data, carries no signal."
+  },
+  "selection_rationale": "Isolation Forest selected on measured performance: it outperformed One-Class SVM, Local Outlier Factor and Elliptic Envelope on precision, recall, F1 and false positive rate on the synthetic evaluation set. It also requires no distributional assumptions about user behaviour, scales well for real-time inference, and is established in prior authentication anomaly detection literature."
 }
