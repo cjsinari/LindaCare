@@ -6,6 +6,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import HeroHeader from '../components/HeroHeader';
+import { BRAND_NAME, BRAND_TAGLINE } from '../theme/brand';
 import RoleToggle from '../components/RoleToggle';
 import TextField from '../components/TextField';
 import PhoneField from '../components/PhoneField';
@@ -225,8 +226,8 @@ export default function RegisterScreen({ navigation }) {
         keyboardDismissMode="on-drag"
       >
         <HeroHeader
-          brand="LindaCare"
-          tagline="Kenya Caregiving Platform"
+          brand={BRAND_NAME}
+          tagline={BRAND_TAGLINE}
           title="Create Account"
           subtitle="Join the secure caregiving network"
         />

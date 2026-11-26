@@ -229,5 +229,5 @@ const styles = StyleSheet.create({
   footer: { alignItems: 'center', gap: space.sm, paddingVertical: space.xl },
   footerSpacer: { height: space.xl },
   footerError: { ...type.caption, color: colors.danger, textAlign: 'center' },
-  footerEnd: { ...type.caption, color: colors.placeholder },
+  footerEnd: { ...type.caption, color: colors.inkMuted },
 });

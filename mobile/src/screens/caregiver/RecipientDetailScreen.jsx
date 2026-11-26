@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', rowGap: space.lg, columnGap: space.md },
   gridItem: { flexBasis: '46%', flexGrow: 1, gap: 2 },
   gridLabelRow: { flexDirection: 'row', alignItems: 'center', gap: space.xs + 1 },
-  gridLabel: { ...type.label, fontSize: 10, color: colors.label, textTransform: 'uppercase' },
+  gridLabel: { ...type.label, fontSize: 13, color: colors.label, textTransform: 'uppercase' },
   gridValue: { ...type.caption, color: colors.ink },
 
   contactRow: {
@@ -349,8 +349,8 @@ const styles = StyleSheet.create({
   },
   contactBody: { flex: 1, gap: 1 },
   contactName: { ...type.bodyMedium, fontSize: 14, color: colors.ink },
-  contactMeta: { ...type.caption, fontSize: 12, color: colors.inkMuted },
-  contactPhone: { ...type.caption, fontSize: 12, color: colors.link },
+  contactMeta: { ...type.caption, fontSize: 14, color: colors.inkMuted },
+  contactPhone: { ...type.caption, fontSize: 14, color: colors.link },
 
   medRow: { paddingHorizontal: space.lg, paddingVertical: space.md, gap: 3 },
   medHead: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
@@ -361,16 +361,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.sm + 2,
     paddingVertical: 2,
   },
-  doseText: { ...type.captionMedium, fontSize: 11, color: colors.info },
-  medSchedule: { ...type.caption, fontSize: 12, color: colors.inkMuted },
+  doseText: { ...type.captionMedium, fontSize: 13, color: colors.info },
+  medSchedule: { ...type.caption, fontSize: 14, color: colors.inkMuted },
   medNote: { flexDirection: 'row', alignItems: 'flex-start', gap: space.xs + 1, marginTop: 2 },
-  medNoteText: { ...type.caption, fontSize: 12, color: colors.info, flex: 1 },
+  medNoteText: { ...type.caption, fontSize: 14, color: colors.info, flex: 1 },
 
   notes: { gap: space.md },
   noteCard: { gap: space.sm },
   noteHead: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
-  noteAuthor: { ...type.captionMedium, fontSize: 12, color: colors.ink, flexShrink: 1 },
-  noteWhen: { ...type.caption, fontSize: 11, color: colors.placeholder, marginLeft: 'auto' },
+  noteAuthor: { ...type.captionMedium, fontSize: 14, color: colors.ink, flexShrink: 1 },
+  noteWhen: { ...type.caption, fontSize: 13, color: colors.inkMuted, marginLeft: 'auto' },
   noteBody: { ...type.body, fontSize: 14, color: colors.inkMuted },
 
   footerRow: { flexDirection: 'row', gap: space.md },

@@ -105,6 +105,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   pillActive: { backgroundColor: colors.tealSoft },
-  label: { ...type.caption, fontSize: 11, lineHeight: 14, color: colors.inkMuted },
+  label: { ...type.caption, fontSize: 13, lineHeight: 14, color: colors.inkMuted },
   labelActive: { fontFamily: type.button.fontFamily, color: colors.ink },
 });

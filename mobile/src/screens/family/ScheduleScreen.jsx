@@ -146,5 +146,5 @@ const styles = StyleSheet.create({
   body: { flex: 1, gap: 2 },
   kind: { ...type.bodyMedium, fontSize: 14, color: colors.ink },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: space.xs + 1 },
-  meta: { ...type.caption, fontSize: 12, color: colors.inkMuted, flex: 1 },
+  meta: { ...type.caption, fontSize: 14, color: colors.inkMuted, flex: 1 },
 });

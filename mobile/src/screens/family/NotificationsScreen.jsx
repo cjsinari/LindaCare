@@ -203,7 +203,7 @@ export default function NotificationsScreen({ navigation }) {
 const styles = StyleSheet.create({
   stack: { gap: space.lg },
   hidden: { flexDirection: 'row', alignItems: 'flex-start', gap: space.sm, paddingHorizontal: space.xs },
-  hiddenText: { ...type.caption, fontSize: 12, color: colors.inkMuted, flex: 1 },
+  hiddenText: { ...type.caption, fontSize: 14, color: colors.inkMuted, flex: 1 },
 
   row: {
     flexDirection: 'row',
@@ -226,5 +226,5 @@ const styles = StyleSheet.create({
   titleUnread: { fontFamily: type.button.fontFamily },
   dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.teal },
   message: { ...type.caption, color: colors.inkMuted },
-  when: { ...type.caption, fontSize: 11, color: colors.placeholder },
+  when: { ...type.caption, fontSize: 13, color: colors.inkMuted },
 });

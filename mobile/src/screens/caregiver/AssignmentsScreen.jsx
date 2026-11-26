@@ -271,10 +271,10 @@ const styles = StyleSheet.create({
   headText: { flex: 1, gap: 3 },
   nameRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm, flexWrap: 'wrap' },
   name: { ...type.title, fontSize: 16, lineHeight: 22, color: colors.ink, flexShrink: 1 },
-  meta: { ...type.caption, fontSize: 12, color: colors.inkMuted },
+  meta: { ...type.caption, fontSize: 14, color: colors.inkMuted },
   addressRow: { flexDirection: 'row', alignItems: 'flex-start', gap: space.xs + 1, marginTop: 2 },
-  address: { ...type.caption, fontSize: 12, color: colors.label, flex: 1 },
-  reference: { ...type.caption, fontSize: 10, color: colors.placeholder, letterSpacing: 0.5 },
+  address: { ...type.caption, fontSize: 14, color: colors.label, flex: 1 },
+  reference: { ...type.caption, fontSize: 13, color: colors.inkMuted, letterSpacing: 0.5 },
 
   footRow: {
     flexDirection: 'row',
@@ -287,6 +287,6 @@ const styles = StyleSheet.create({
   },
   stats: { flexDirection: 'row', gap: space.lg, flexShrink: 1 },
   stat: { gap: 0 },
-  statLabel: { ...type.caption, fontSize: 10, color: colors.placeholder },
-  statValue: { ...type.captionMedium, fontSize: 12, color: colors.ink },
+  statLabel: { ...type.caption, fontSize: 13, color: colors.inkMuted },
+  statValue: { ...type.captionMedium, fontSize: 14, color: colors.ink },
 });

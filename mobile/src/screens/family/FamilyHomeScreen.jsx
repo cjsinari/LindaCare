@@ -288,13 +288,13 @@ const styles = StyleSheet.create({
     gap: space.md,
     flexWrap: 'wrap',
   },
-  statusLabel: { ...type.label, fontSize: 10, color: colors.label, flexShrink: 1 },
+  statusLabel: { ...type.label, fontSize: 13, color: colors.label, flexShrink: 1 },
   statusNote: { ...type.body, color: colors.ink },
   lastRow: { flexDirection: 'row', alignItems: 'center', gap: space.md },
   lastEmoji: { fontSize: 28, lineHeight: 34 },
   lastText: { flex: 1, gap: 2 },
   lastTitle: { ...type.bodyMedium, fontSize: 14, color: colors.ink },
-  lastMeta: { ...type.caption, fontSize: 12, color: colors.inkMuted },
+  lastMeta: { ...type.caption, fontSize: 14, color: colors.inkMuted },
 
   nextRow: { flexDirection: 'row', alignItems: 'center', gap: space.md },
   linkRow: { flexDirection: 'row', alignItems: 'center', gap: space.md },
@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
   },
   nextText: { flex: 1, gap: 2 },
   nextWhen: { ...type.bodyMedium, color: colors.ink },
-  nextMeta: { ...type.caption, fontSize: 12, color: colors.inkMuted },
+  nextMeta: { ...type.caption, fontSize: 14, color: colors.inkMuted },
 
   bell: {
     width: TOUCH_TARGET,
@@ -330,5 +330,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  badgeText: { fontFamily: type.button.fontFamily, fontSize: 10, color: colors.surface },
+  badgeText: { fontFamily: type.button.fontFamily, fontSize: 13, color: colors.surface },
 });

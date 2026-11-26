@@ -348,9 +348,9 @@ const styles = StyleSheet.create({
     gap: 1,
     ...surface.card,
   },
-  riskLabel: { ...type.label, fontSize: 9, color: colors.label },
+  riskLabel: { ...type.label, fontSize: 13, color: colors.label },
   riskRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
-  riskValue: { ...type.captionMedium, fontSize: 12 },
+  riskValue: { ...type.captionMedium, fontSize: 14 },
   riskDot: { width: 7, height: 7, borderRadius: 4 },
 
   statRow: { flexDirection: 'row', gap: space.md, marginBottom: space.xl },
@@ -388,9 +388,9 @@ const styles = StyleSheet.create({
     gap: space.sm,
   },
   profileName: { ...type.title, fontSize: 16, lineHeight: 22, color: colors.ink },
-  profileMeta: { ...type.caption, fontSize: 12, color: colors.inkMuted, marginTop: -2 },
+  profileMeta: { ...type.caption, fontSize: 14, color: colors.inkMuted, marginTop: -2 },
   profileFoot: { flexDirection: 'row', alignItems: 'center', gap: space.sm, marginTop: space.xs },
-  profileNext: { ...type.captionMedium, fontSize: 12, color: colors.link, flex: 1 },
+  profileNext: { ...type.captionMedium, fontSize: 14, color: colors.link, flex: 1 },
 
   visitRow: {
     flexDirection: 'row',
@@ -412,8 +412,8 @@ const styles = StyleSheet.create({
   visitBody: { flex: 1, gap: 2 },
   visitNameRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
   visitName: { ...type.bodyMedium, fontSize: 14, color: colors.ink, flexShrink: 1 },
-  visitMeta: { ...type.caption, fontSize: 12, color: colors.inkMuted },
+  visitMeta: { ...type.caption, fontSize: 14, color: colors.inkMuted },
   visitAction: { flexDirection: 'row', alignItems: 'center', gap: space.xs },
-  visitActionText: { ...type.captionMedium, fontSize: 12, color: colors.link },
+  visitActionText: { ...type.captionMedium, fontSize: 14, color: colors.link },
   visitActionDone: { color: colors.inkMuted },
 });

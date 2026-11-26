@@ -4,6 +4,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import HeroHeader from '../components/HeroHeader';
+import { BRAND_NAME, BRAND_TAGLINE } from '../theme/brand';
 import PhoneField from '../components/PhoneField';
 import PrimaryButton from '../components/PrimaryButton';
 import Banner from '../components/Banner';
@@ -103,8 +104,8 @@ export default function LoginScreen({ navigation }) {
       keyboardShouldPersistTaps="handled"
     >
       <HeroHeader
-        brand="LindaCare"
-        tagline="Kenya Caregiving Platform"
+        brand={BRAND_NAME}
+        tagline={BRAND_TAGLINE}
         title="Welcome back"
         subtitle="Sign in with your registered phone number"
       />

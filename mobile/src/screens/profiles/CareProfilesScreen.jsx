@@ -216,6 +216,6 @@ const styles = StyleSheet.create({
   },
   rowText: { flex: 1, gap: 2 },
   name: { ...type.bodyMedium, color: colors.ink },
-  meta: { ...type.caption, fontSize: 12, color: colors.inkMuted },
+  meta: { ...type.caption, fontSize: 14, color: colors.inkMuted },
   link: { ...type.bodyMedium, color: colors.link, paddingVertical: space.sm },
 });

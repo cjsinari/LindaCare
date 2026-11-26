@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   text: { flex: 1, gap: 1 },
   name: { ...type.title, fontSize: 17, lineHeight: 24, color: colors.ink },
   role: { ...type.caption, color: colors.inkMuted },
-  since: { ...type.caption, fontSize: 11, color: colors.placeholder },
+  since: { ...type.caption, fontSize: 13, color: colors.inkMuted },
   primary: {
     width: 26,
     height: 26,

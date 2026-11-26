@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   headText: { flex: 1, gap: 1 },
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
   title: { ...type.bodyMedium, fontSize: 14, color: colors.ink, flexShrink: 1 },
-  meta: { ...type.caption, fontSize: 12, color: colors.inkMuted },
+  meta: { ...type.caption, fontSize: 14, color: colors.inkMuted },
 
   facts: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
   fact: {
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     paddingVertical: space.xs,
   },
   factEmoji: { fontSize: 13, lineHeight: 17 },
-  factText: { ...type.captionMedium, fontSize: 11, color: colors.inkMuted },
+  factText: { ...type.captionMedium, fontSize: 13, color: colors.inkMuted },
 
   body: { ...type.body, fontSize: 14, color: colors.inkMuted },
 });

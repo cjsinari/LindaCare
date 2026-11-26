@@ -496,7 +496,7 @@ const styles = StyleSheet.create({
   timeRow: { flexDirection: 'row', alignItems: 'flex-end', gap: space.md },
   timeRule: { width: StyleSheet.hairlineWidth, alignSelf: 'stretch', backgroundColor: colors.border },
   timeSlot: { flex: 1, gap: space.sm },
-  timeLabel: { ...type.label, fontSize: 10, color: colors.label },
+  timeLabel: { ...type.label, fontSize: 13, color: colors.label },
   timeBox: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -511,8 +511,8 @@ const styles = StyleSheet.create({
   timeBoxFilled: { borderColor: colors.fieldBorderFocus, backgroundColor: colors.tealSoft },
   timeValue: { ...type.bodyMedium, fontSize: 16, color: colors.ink, letterSpacing: 1 },
   timeValueEmpty: { color: colors.placeholder },
-  durationText: { ...type.caption, fontSize: 12, color: colors.inkMuted, paddingTop: space.md },
-  actionError: { ...type.caption, fontSize: 12, color: colors.danger, paddingTop: space.md },
+  durationText: { ...type.caption, fontSize: 14, color: colors.inkMuted, paddingTop: space.md },
+  actionError: { ...type.caption, fontSize: 14, color: colors.danger, paddingTop: space.md },
   timeActions: { paddingTop: space.lg },
 
   wellbeingRow: { flexDirection: 'row', gap: space.sm },
@@ -528,7 +528,7 @@ const styles = StyleSheet.create({
     paddingVertical: space.md,
   },
   wellbeingEmoji: { fontSize: 22, lineHeight: 28 },
-  wellbeingLabel: { ...type.caption, fontSize: 11, color: colors.inkMuted },
+  wellbeingLabel: { ...type.caption, fontSize: 13, color: colors.inkMuted },
   wellbeingTick: {
     position: 'absolute',
     top: 6,
@@ -540,11 +540,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
-  taskCount: { ...type.captionMedium, fontSize: 12, color: colors.inkMuted },
+  taskCount: { ...type.captionMedium, fontSize: 14, color: colors.inkMuted },
   noTasks: { flexDirection: 'row', alignItems: 'center', gap: space.md },
   noTasksText: { ...type.caption, color: colors.inkMuted, flex: 1 },
 
-  notesHint: { ...type.caption, fontSize: 12, color: colors.inkMuted, marginBottom: space.md },
+  notesHint: { ...type.caption, fontSize: 14, color: colors.inkMuted, marginBottom: space.md },
   notesInput: {
     minHeight: 130,
     borderWidth: 1,
@@ -564,9 +564,9 @@ const styles = StyleSheet.create({
     marginTop: space.sm,
     minHeight: 16,
   },
-  notesNeeded: { ...type.caption, fontSize: 11, color: colors.warning, flex: 1 },
-  notesCount: { ...type.caption, fontSize: 11, color: colors.placeholder },
+  notesNeeded: { ...type.caption, fontSize: 13, color: colors.warning, flex: 1 },
+  notesCount: { ...type.caption, fontSize: 13, color: colors.inkMuted },
 
   footer: { gap: space.sm, paddingBottom: space.xs },
-  footerNote: { ...type.caption, fontSize: 11, color: colors.inkMuted, textAlign: 'center' },
+  footerNote: { ...type.caption, fontSize: 13, color: colors.inkMuted, textAlign: 'center' },
 });

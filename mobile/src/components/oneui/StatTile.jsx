@@ -70,10 +70,10 @@ const styles = StyleSheet.create({
     lineHeight: 34,
     color: colors.ink,
   },
-  valueZero: { color: colors.placeholder },
+  valueZero: { color: colors.inkMuted },
   label: {
     ...type.caption,
-    fontSize: 11,
+    fontSize: 13,
     lineHeight: 15,
     color: colors.inkMuted,
     textAlign: 'center',

@@ -334,8 +334,8 @@ const styles = StyleSheet.create({
     marginTop: space.sm,
     minHeight: 18,
   },
-  hint: { ...type.caption, fontSize: 12, color: colors.warning },
-  counter: { ...type.caption, fontSize: 11, color: colors.placeholder },
+  hint: { ...type.caption, fontSize: 14, color: colors.warning },
+  counter: { ...type.caption, fontSize: 13, color: colors.inkMuted },
 
   footer: {
     paddingHorizontal: space.xl,
@@ -345,7 +345,7 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.border,
   },
-  footerHint: { ...type.caption, fontSize: 12, color: colors.inkMuted, textAlign: 'center' },
+  footerHint: { ...type.caption, fontSize: 14, color: colors.inkMuted, textAlign: 'center' },
 
   confirm: {
     ...StyleSheet.absoluteFillObject,

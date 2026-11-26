@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
     gap: space.sm,
     paddingHorizontal: space.xs,
   },
-  readOnlyText: { ...type.caption, fontSize: 12, color: colors.inkMuted, flex: 1 },
+  readOnlyText: { ...type.caption, fontSize: 14, color: colors.inkMuted, flex: 1 },
 
   profile: { gap: space.lg },
   profileHead: { flexDirection: 'row', alignItems: 'center', gap: space.lg },
@@ -349,13 +349,13 @@ const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', rowGap: space.lg, columnGap: space.md },
   fact: { flexBasis: '46%', flexGrow: 1, gap: 2 },
   factLabelRow: { flexDirection: 'row', alignItems: 'center', gap: space.xs + 1 },
-  factLabel: { ...type.label, fontSize: 10, color: colors.label },
+  factLabel: { ...type.label, fontSize: 13, color: colors.label },
   factValue: { ...type.caption, color: colors.ink },
 
   plan: { gap: space.lg },
   planSummary: { ...type.body, color: colors.ink },
   block: { gap: space.sm },
-  blockLabel: { ...type.label, fontSize: 10, color: colors.label },
+  blockLabel: { ...type.label, fontSize: 13, color: colors.label },
   goal: { flexDirection: 'row', alignItems: 'flex-start', gap: space.sm },
   goalText: { ...type.caption, color: colors.ink, flex: 1 },
   routine: {
@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
   note: { flexDirection: 'row', alignItems: 'flex-start', gap: space.sm },
   noteText: { ...type.caption, color: colors.ink, flex: 1 },
   noteLabel: { fontFamily: type.captionMedium.fontFamily },
-  reviewed: { ...type.caption, fontSize: 11, color: colors.placeholder },
+  reviewed: { ...type.caption, fontSize: 13, color: colors.inkMuted },
 
   med: { paddingHorizontal: space.lg, paddingVertical: space.md, gap: 3 },
   medHead: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
@@ -380,8 +380,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.sm + 2,
     paddingVertical: 2,
   },
-  doseText: { ...type.captionMedium, fontSize: 11, color: colors.info },
-  medSchedule: { ...type.caption, fontSize: 12, color: colors.inkMuted },
+  doseText: { ...type.captionMedium, fontSize: 13, color: colors.info },
+  medSchedule: { ...type.caption, fontSize: 14, color: colors.inkMuted },
 
   contact: {
     flexDirection: 'row',
@@ -393,11 +393,11 @@ const styles = StyleSheet.create({
   },
   contactBody: { flex: 1, gap: 1 },
   contactName: { ...type.bodyMedium, fontSize: 14, color: colors.ink },
-  contactMeta: { ...type.caption, fontSize: 12, color: colors.inkMuted },
-  contactPhone: { ...type.caption, fontSize: 12, color: colors.link },
+  contactMeta: { ...type.caption, fontSize: 14, color: colors.inkMuted },
+  contactPhone: { ...type.caption, fontSize: 14, color: colors.link },
 
   settings: { gap: space.lg },
-  settingsNote: { ...type.caption, fontSize: 12, color: colors.inkMuted },
+  settingsNote: { ...type.caption, fontSize: 14, color: colors.inkMuted },
   input: {
     minHeight: TOUCH_TARGET,
     borderWidth: 1,
@@ -409,6 +409,6 @@ const styles = StyleSheet.create({
     color: colors.ink,
   },
   inputFoot: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: space.md },
-  inputHint: { ...type.caption, fontSize: 12, color: colors.inkMuted, flex: 1 },
-  saveError: { ...type.caption, fontSize: 12, color: colors.warning },
+  inputHint: { ...type.caption, fontSize: 14, color: colors.inkMuted, flex: 1 },
+  saveError: { ...type.caption, fontSize: 14, color: colors.warning },
 });
