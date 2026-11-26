@@ -29,20 +29,6 @@
   margin-bottom: var(--s6);
 }
 
-.login__mark {
-  width: 2.5rem;
-  height: 2.5rem;
-  flex: none;
-  display: grid;
-  place-items: center;
-  border-radius: var(--radius);
-  background: var(--brand);
-  color: var(--brand-ink);
-  font-weight: 700;
-  font-size: var(--text-sm);
-  letter-spacing: 0.02em;
-}
-
 .login__title { font-size: var(--text-lg); }
 .login__subtitle { font-size: var(--text-xs); color: var(--text-muted); }
 
