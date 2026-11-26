@@ -12,6 +12,7 @@ import { getDeviceFingerprint } from '../auth/session';
 import { useAuth } from '../auth/AuthContext';
 import { bannerFor, otpFieldError } from '../auth/errors';
 import { verifySchema, verifyDefaults } from '../validation/login';
+import { maskContact } from '../validation/phone';
 import { colors, radius, space, surface, type } from '../theme/tokens';
 
 /** How long before another code can be requested. */
@@ -224,7 +225,7 @@ export default function VerifyScreen({ route, navigation }) {
   const subtitle = challenge
     ? 'Enter the second code we just sent you'
     : identifier
-      ? `Enter the 6-digit code sent to ${identifier}`
+      ? `Enter the 6-digit code sent to ${maskContact(identifier)}`
       : `Enter the 6-digit code we sent you`;
 
   return (
