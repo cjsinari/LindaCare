@@ -100,4 +100,32 @@ async function silentRequest({ phone, ip, reason }) {
   return { limited, perNumber, distinctNumbers };
 }
 
-module.exports = { silentRequest, MAX_PER_NUMBER, SWEEP_DISTINCT };
+/*
+ * The lockout a number gets when it exhausts a decoy code.
+ *
+ * A real account that submits five wrong codes is locked for LOCK_MINUTES, and
+ * every request in that window answers 423 with the seconds remaining. A
+ * number with no account has no users row to lock, and its decoy is burned on
+ * the fifth attempt, so without this the sixth attempt would answer
+ * OTP_INVALID where a real account answers ACCOUNT_LOCKED. Same information,
+ * one step further along.
+ *
+ * Redis rather than a table because this is the one piece of state here that
+ * belongs to a number rather than to an account, and it expires on its own.
+ * Failing open matches the rest of this file: a Redis outage must not invent a
+ * lockout for somebody who is simply signing in.
+ */
+async function lockPhone(phone, minutes) {
+  try { await redis.set(`otpprobe:lock:${tag(phone)}`, '1', 'EX', minutes * 60); }
+  catch (err) { console.error('Probe guard could not record a lockout:', err.message); }
+}
+
+/** Seconds left on that lockout, or 0 if there is none. */
+async function lockedSeconds(phone) {
+  try {
+    const ttl = await redis.ttl(`otpprobe:lock:${tag(phone)}`);
+    return ttl > 0 ? ttl : 0;
+  } catch { return 0; }
+}
+
+module.exports = { silentRequest, lockPhone, lockedSeconds, MAX_PER_NUMBER, SWEEP_DISTINCT };

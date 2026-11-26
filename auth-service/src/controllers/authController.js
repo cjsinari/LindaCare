@@ -4,7 +4,7 @@ const { toE164 } = require('../utils/phone');
 const { parse } = require('../utils/validate');
 const { isValidNationalId, hashNationalId, nationalIdLast4 } = require('../utils/nationalId');
 const { KENYA_COUNTIES, COUNTRY_CODES, RELATIONSHIP_VALUES } = require('../data/locality');
-const { issueOtp, verifyOtp } = require('../utils/otp');
+const { issueOtp, issueDecoyOtp, verifyOtp } = require('../utils/otp');
 const { logEvent } = require('../utils/audit');
 const { sha256, newRefreshToken, signAccessToken, accessTtlSeconds } = require('../utils/tokens');
 const sessionStore = require('../services/sessionStore');
@@ -184,6 +184,47 @@ async function otpFailure(res, user, result, purpose) {
   return res.status(401).json({ error: 'Invalid or expired verification code.', code: 'OTP_INVALID' });
 }
 
+/**
+ * The verification failure for a number with no account able to receive a code.
+ *
+ * -- What this replaces --
+ *
+ * These paths used to answer OTP_INVALID flatly. A real account answers
+ * OTP_INCORRECT with attemptsLeft, and locks on the fifth wrong code. So one
+ * request carrying any six digits told a registered number from an
+ * unregistered one, in two fields the mobile app puts on screen in different
+ * words. Making /otp/request generic was never enough by itself, because the
+ * screen it leads to asks the same question and was given a straight answer.
+ *
+ * -- Why it mirrors rather than flattens --
+ *
+ * The alternative was to drop attemptsLeft and give everybody one message. The
+ * countdown is there so somebody misreading a code off a notification does not
+ * silently burn all five tries, and removing it would charge the fix to real
+ * users. Running the decoy through verifyOtp instead means the reply is
+ * produced by the same code that produces a real one, which is also the only
+ * version of this that cannot drift apart later.
+ *
+ * The decoy can never verify: what is stored for it is random, not a digest of
+ * anything. Even so, there is no user in hand here and no path below that
+ * could issue a session.
+ */
+async function decoyFailure(res, phone, purpose, code) {
+  const locked = await probeGuard.lockedSeconds(phone);
+  if (locked > 0) return lockedResponse(res, locked);
+
+  const result = await verifyOtp(phone, purpose, code);
+  if (result.reason === 'too_many_attempts') {
+    await probeGuard.lockPhone(phone, LOCK_MINUTES);
+    return res.status(423).json({ error: `Too many incorrect codes. This account is locked for ${LOCK_MINUTES} minutes.`,
+      code: 'ACCOUNT_LOCKED', retryAfterSeconds: LOCK_MINUTES * 60 });
+  }
+  if (result.reason === 'wrong_code') {
+    return res.status(401).json({ error: 'Incorrect verification code.', code: 'OTP_INCORRECT', attemptsLeft: result.attemptsLeft });
+  }
+  return res.status(401).json({ error: 'Invalid or expired verification code.', code: 'OTP_INVALID' });
+}
+
 const lockedResponse = (res, s) =>
   res.status(423).json({ error: 'This account is temporarily locked. Please try again later.', code: 'ACCOUNT_LOCKED', retryAfterSeconds: s });
 
@@ -277,13 +318,26 @@ async function requestOtp(req, res) {
   let phone;
   try { phone = toE164(data.phoneNumber); } catch { return res.status(400).json({ error: 'Invalid phone number' }); }
   const generic = { message: 'If this number is registered, a verification code has been sent.' };
-  // Every path that answers with the generic message WITHOUT issuing a code goes
-  // through here, so it is counted, audited and held to the same 3-per-15-minutes
-  // budget a real account gets. Without it an unknown number never hit 429 while a
-  // real one did, which let a caller tell the two apart.
+  /*
+   * Every path that answers with the generic message without sending a code.
+   *
+   * It records a decoy: a real otps row for this number and purpose, holding a
+   * value no submitted code can match. From here on the number is governed by
+   * the same code in utils/otp.js that governs a real account -- the same
+   * three-per-fifteen-minutes budget counted off the same table, the same five
+   * attempts, the same TTL -- so there is no behaviour left for a caller to
+   * compare.
+   *
+   * The rate limit is the one inside issueDecoyOtp rather than probeGuard's
+   * Redis counter, because it is literally the same query issueOtp runs.
+   * probeGuard stays for the two things only it does: auditing the probe, and
+   * holding the lockout that a number with no account cannot otherwise have.
+   */
   const silent = async (reason) => {
-    const { limited } = await probeGuard.silentRequest({ phone, ip: req.ip, reason });
-    return limited ? otpIssueError(res, 'rate_limited') : res.status(200).json(generic);
+    await probeGuard.silentRequest({ phone, ip: req.ip, reason });
+    const decoy = await issueDecoyOtp(phone, data.purpose);
+    if (!decoy.ok) return otpIssueError(res, decoy.reason);
+    return res.status(200).json(generic);
   };
   try {
     const { rows } = await pool.query(USER_BY_PHONE, [phone]);
@@ -314,7 +368,7 @@ async function verifyRegistration(req, res) {
   try {
     const { rows } = await pool.query(USER_BY_PHONE, [phone]);
     const user = rows[0];
-    if (!user || user.phone_verified) return res.status(401).json({ error: 'Invalid or expired verification code.', code: 'OTP_INVALID' });
+    if (!user || user.phone_verified) return decoyFailure(res, phone, 'registration', data.otp);
     if (user.lock_seconds > 0) return lockedResponse(res, user.lock_seconds);
 
     const result = await verifyOtp(phone, 'registration', data.otp);
@@ -362,7 +416,7 @@ async function verifyLogin(req, res) {
   try {
     const { rows } = await pool.query(USER_BY_PHONE, [phone]);
     const user = rows[0];
-    if (!user || !user.phone_verified) return res.status(401).json({ error: 'Invalid or expired verification code.', code: 'OTP_INVALID' });
+    if (!user || !user.phone_verified) return decoyFailure(res, phone, 'login', data.otp);
     if (user.account_status === 'frozen') return res.status(403).json({ error: 'This account is frozen. Please contact support.', code: 'ACCOUNT_FROZEN' });
     if (user.account_status === 'suspended') return res.status(403).json({ error: 'This account is suspended. Please contact support.', code: 'ACCOUNT_SUSPENDED' });
     if (user.lock_seconds > 0) return lockedResponse(res, user.lock_seconds);
