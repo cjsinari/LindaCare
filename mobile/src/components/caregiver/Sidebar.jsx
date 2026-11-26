@@ -352,8 +352,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarText: { fontFamily: type.button.fontFamily, fontSize: 12, color: colors.onTeal },
+  avatarText: { fontFamily: type.button.fontFamily, fontSize: 14, color: colors.onTeal },
   accountText: { flex: 1 },
   accountName: { ...type.captionMedium, color: sidebarColors.ink },
-  accountRole: { ...type.caption, fontSize: 11, color: sidebarColors.inkMuted },
+  accountRole: { ...type.caption, fontSize: 13, color: sidebarColors.inkMuted },
 });

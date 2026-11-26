@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import HeroHeader from '../components/HeroHeader';
+import { BRAND_NAME, BRAND_TAGLINE } from '../theme/brand';
 import Banner from '../components/Banner';
 import PrimaryButton from '../components/PrimaryButton';
 import { useAuth } from '../auth/AuthContext';
@@ -43,8 +44,8 @@ export default function HomeScreen() {
   return (
     <ScrollView style={styles.flex} contentContainerStyle={styles.scroll}>
       <HeroHeader
-        brand="LindaCare"
-        tagline="Kenya Caregiving Platform"
+        brand={BRAND_NAME}
+        tagline={BRAND_TAGLINE}
         title={user?.fullName ? `Hello, ${user.fullName.split(' ')[0]}` : 'Signed in'}
         subtitle={ROLE_LABEL[user?.role] || 'Account'}
       />

@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   text: {
     ...type.caption,
     fontFamily: type.captionMedium.fontFamily,
-    fontSize: 11,
+    fontSize: 13,
     lineHeight: 16,
   },
 });

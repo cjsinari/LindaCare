@@ -246,16 +246,16 @@ const styles = StyleSheet.create({
   profileText: { flex: 1, gap: 2 },
   name: { ...type.title, color: colors.ink },
   meta: { ...type.caption, color: colors.inkMuted },
-  edit: { ...type.captionMedium, fontSize: 12, color: colors.link, marginTop: 2 },
+  edit: { ...type.captionMedium, fontSize: 14, color: colors.link, marginTop: 2 },
 
   notifications: { gap: space.md },
-  blockLabel: { ...type.label, fontSize: 10, color: colors.label },
+  blockLabel: { ...type.label, fontSize: 13, color: colors.label },
   toggleRow: { flexDirection: 'row', alignItems: 'center', gap: space.md, minHeight: TOUCH_TARGET },
   toggleText: { flex: 1, gap: 1 },
   toggleLabel: { ...type.bodyMedium, fontSize: 14, color: colors.ink },
-  toggleHint: { ...type.caption, fontSize: 12, color: colors.inkMuted },
+  toggleHint: { ...type.caption, fontSize: 14, color: colors.inkMuted },
   alwaysOn: { flexDirection: 'row', alignItems: 'flex-start', gap: space.sm },
-  alwaysOnText: { ...type.caption, fontSize: 11, color: colors.success, flex: 1 },
+  alwaysOnText: { ...type.caption, fontSize: 13, color: colors.success, flex: 1 },
 
   infoRow: {
     flexDirection: 'row',

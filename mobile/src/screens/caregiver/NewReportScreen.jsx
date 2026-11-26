@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
   visitRule: { width: 2, alignSelf: 'stretch', borderRadius: 1, backgroundColor: colors.tealSoft },
   visitBody: { flex: 1, gap: 2 },
   visitName: { ...type.bodyMedium, fontSize: 14, color: colors.ink },
-  visitMeta: { ...type.caption, fontSize: 12, color: colors.inkMuted },
+  visitMeta: { ...type.caption, fontSize: 14, color: colors.inkMuted },
 
   personRow: {
     flexDirection: 'row',
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
   personBody: { flex: 1, gap: 2 },
   personNameRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
   personName: { ...type.bodyMedium, fontSize: 14, color: colors.ink, flexShrink: 1 },
-  personMeta: { ...type.caption, fontSize: 12, color: colors.inkMuted },
+  personMeta: { ...type.caption, fontSize: 14, color: colors.inkMuted },
 
   noMatch: { alignItems: 'center', gap: space.md, paddingVertical: space.xl },
   noMatchText: { ...type.caption, color: colors.inkMuted },

@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
   sections: { gap: space.xl },
   card: { gap: space.md },
   lead: { ...type.body, fontSize: 14, color: colors.ink },
-  hint: { ...type.caption, fontSize: 12, color: colors.inkMuted },
+  hint: { ...type.caption, fontSize: 14, color: colors.inkMuted },
   row: { flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' },
   done: { alignItems: 'center' },
   doneIcon: {

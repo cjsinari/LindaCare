@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
   sections: { gap: space.xl },
   card: { gap: space.md },
   saveRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: space.md, marginTop: -space.sm },
-  saveNote: { ...type.caption, fontSize: 12, color: colors.inkMuted, flex: 1 },
+  saveNote: { ...type.caption, fontSize: 14, color: colors.inkMuted, flex: 1 },
 
   phoneRow: { flexDirection: 'row', alignItems: 'center', gap: space.md, minHeight: TOUCH_TARGET },
   phoneIcon: {
@@ -203,9 +203,9 @@ const styles = StyleSheet.create({
   },
   phoneText: { flex: 1, gap: 2 },
   phone: { ...type.bodyMedium, color: colors.ink, letterSpacing: 0.3 },
-  phoneHint: { ...type.caption, fontSize: 12, color: colors.inkMuted },
+  phoneHint: { ...type.caption, fontSize: 14, color: colors.inkMuted },
 
   fact: { gap: 2 },
-  factLabel: { ...type.label, fontSize: 10, color: colors.label },
+  factLabel: { ...type.label, fontSize: 13, color: colors.label },
   factValue: { ...type.body, fontSize: 14, color: colors.ink },
 });

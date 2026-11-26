@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   brandRow: { flexDirection: 'row', alignItems: 'center', gap: space.md },
   brandText: { flex: 1 },
   brandName: { ...type.bodyMedium, fontFamily: type.button.fontFamily, color: colors.onNavy },
-  tagline: { ...type.caption, fontSize: 12, color: colors.onNavyMuted },
+  tagline: { ...type.caption, fontSize: 14, color: colors.onNavyMuted },
 
   mark: {
     width: 42,

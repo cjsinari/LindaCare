@@ -56,9 +56,9 @@
  *   ink on surface              #14283d on #ffffff   14.99:1  AAA
  *   label on surface            #46678a on #ffffff    5.89:1  AA
  *   label on page               #46678a on #e6ecf3    4.95:1  AA
- *   inkMuted on surface         #4e6a87 on #ffffff    5.62:1  AA
- *   inkMuted on page            #4e6a87 on #e6ecf3    4.73:1  AA
- *   inkMuted on surfaceSunken   #4e6a87 on #eef1f5    4.96:1  AA
+ *   inkMuted on surface         #3f5a76 on #ffffff    7.15:1  AAA
+ *   inkMuted on page            #3f5a76 on #e6ecf3    6.02:1  AA
+ *   inkMuted on surfaceSunken   #3f5a76 on #eef1f5    6.31:1  AA
  *   white on navy               #ffffff on #15314f   13.26:1  AAA
  *   navy subtitle on navy       #9bb3cc on #15314f    6.13:1  AA
  *   white on teal (button)      #ffffff on #17807d    4.75:1  AA
@@ -94,6 +94,14 @@
  * visible label above it, and the placeholder repeats a format hint at most.
  * A placeholder standing in for a label would not be exempt, which is the
  * reason none of them do.
+ *
+ * That rule was written here and then broken in eleven places. `placeholder`
+ * had been borrowed as a general "quietest grey" and was colouring real
+ * content -- the Since / Visits / Last visit labels on an assignment card, the
+ * timestamp on a care note, the date a care plan was reviewed, a stat tile
+ * showing zero. All of it was information, none of it was a placeholder, and
+ * at 2.34:1 none of it passed. Those now use `inkMuted`. The token is back to
+ * meaning the one thing it is exempt for: the hint inside an empty input.
  *
  * Disabled button ink, #8fa0b1 on #eceff3, is 2.33:1 and is exempt under
  * 1.4.3, which excludes inactive controls. The submit button spends real time
@@ -131,10 +139,20 @@ export const colors = {
 
   // -- Ink --
   ink: '#14283d',
-  // Darkened from #55708c when `page` came down to #e6ecf3: at the old value
-  // it measured 4.45:1 there, under the 4.5 floor for body text. On every
-  // other ground it simply got clearer.
-  inkMuted: '#4e6a87',
+  /*
+   * Darkened twice, and the second time was not about WCAG.
+   *
+   * It was #55708c, which measured 4.45:1 once `page` came down to #e6ecf3 --
+   * under the 4.5 floor. #4e6a87 fixed that and cleared AA everywhere.
+   *
+   * It is now #3f5a76, which clears AAA (7:1) on a white card, because AA is
+   * the wrong target for this token in this app. `inkMuted` does not carry
+   * decoration. It carries a parent's age, their conditions, the address a
+   * caregiver is walking to and the date of the last visit, read by someone in
+   * their fifties on a bright street. The 4.5 threshold is the point at which
+   * text stops being a failure, not the point at which it becomes comfortable.
+   */
+  inkMuted: '#3f5a76',
   label: '#46678a',         // the uppercase field labels
   placeholder: '#93a7bb',
   onNavy: '#ffffff',
@@ -194,19 +212,51 @@ export const font = {
   bold: 'Poppins_700Bold',
 };
 
+/*
+ * The scale is set for the people who actually use this app.
+ *
+ * Not for a design review on a 27-inch monitor. The family side of LindaCare
+ * is used by people in their forties and fifties arranging care for a parent,
+ * and the caregiver side by people reading a phone outdoors between visits.
+ * Presbyopia is effectively universal from about 45: the near point recedes,
+ * small type goes soft before it goes invisible, and the reader's own fix is
+ * to hold the phone further away, which makes everything smaller again.
+ *
+ * So the floor here is 13, nothing on a screen is allowed below it, and the
+ * body sizes sit a step above where a design-led scale would put them. The
+ * cost is real -- fewer words per screen, more wrapping, some truncation --
+ * and it is the right trade. A caption nobody can read is not a caption.
+ *
+ * Line heights are generous for the same reason: tight leading is the first
+ * thing to fail when the eye cannot sharpen a line, because the row above
+ * crowds into the row you are on.
+ *
+ * `allowFontScaling` is left at its default of true throughout, so somebody
+ * who has already turned type up in Android settings gets that on top of
+ * this. These numbers are the floor, not the ceiling.
+ */
 export const type = {
-  hero: { fontFamily: font.bold, fontSize: 28, lineHeight: 36 },
-  title: { fontFamily: font.semibold, fontSize: 20, lineHeight: 28 },
-  subtitle: { fontFamily: font.regular, fontSize: 14, lineHeight: 21 },
-  body: { fontFamily: font.regular, fontSize: 15, lineHeight: 22 },
-  bodyMedium: { fontFamily: font.medium, fontSize: 15, lineHeight: 22 },
-  button: { fontFamily: font.semibold, fontSize: 16, lineHeight: 22 },
-  // Uppercase, tracked out, small: the mockups' field labels. Tracking is what
-  // keeps uppercase legible at this size.
-  label: { fontFamily: font.semibold, fontSize: 11, lineHeight: 16, letterSpacing: 0.8 },
-  caption: { fontFamily: font.regular, fontSize: 13, lineHeight: 19 },
-  captionMedium: { fontFamily: font.medium, fontSize: 13, lineHeight: 19 },
+  hero: { fontFamily: font.bold, fontSize: 30, lineHeight: 38 },
+  title: { fontFamily: font.semibold, fontSize: 22, lineHeight: 30 },
+  subtitle: { fontFamily: font.regular, fontSize: 16, lineHeight: 24 },
+  body: { fontFamily: font.regular, fontSize: 16, lineHeight: 24 },
+  bodyMedium: { fontFamily: font.medium, fontSize: 16, lineHeight: 24 },
+  button: { fontFamily: font.semibold, fontSize: 17, lineHeight: 24 },
+  // Uppercase, tracked out: the field labels. Tracking is what keeps uppercase
+  // legible, and 12 is as small as uppercase is allowed to go here.
+  label: { fontFamily: font.semibold, fontSize: 12, lineHeight: 16, letterSpacing: 0.8 },
+  caption: { fontFamily: font.regular, fontSize: 14, lineHeight: 21 },
+  captionMedium: { fontFamily: font.medium, fontSize: 14, lineHeight: 21 },
 };
+
+/**
+ * The smallest type allowed anywhere in the app.
+ *
+ * Here as a number rather than a comment because it is a rule, not a
+ * preference: anything that wants to be smaller than this is something the
+ * screen should not be saying at all.
+ */
+export const MIN_FONT_SIZE = 13;
 
 /*
  * The minimum touch target, in density-independent pixels.

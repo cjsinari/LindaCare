@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
   },
   optional: {
     ...type.caption,
-    fontSize: 11,
+    fontSize: 13,
     color: colors.inkMuted,
   },
 });

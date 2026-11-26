@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   // Struck through as well as dimmed: on a list of five, "done" has to be
   // readable at a glance and dimming alone is close to invisible in daylight.
   labelDone: { color: colors.inkMuted, textDecorationLine: 'line-through' },
-  error: { ...type.caption, fontSize: 12, color: colors.danger },
+  error: { ...type.caption, fontSize: 14, color: colors.danger },
 
   trailing: { width: 24, alignItems: 'center', justifyContent: 'center' },
 });
