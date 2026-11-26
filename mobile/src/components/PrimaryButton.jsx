@@ -2,7 +2,7 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 import { colors, radius, space, type, TOUCH_TARGET } from '../theme/tokens';
 
 /*
- * The teal action button at the foot of each form.
+ * The accent action button at the foot of each form.
  *
  * ── Why a disabled button is never the only signal ──
  *
@@ -59,15 +59,15 @@ const styles = StyleSheet.create({
   button: {
     minHeight: TOUCH_TARGET + 4,
     borderRadius: radius.md,
-    backgroundColor: colors.teal,
+    backgroundColor: colors.clay,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: space.xl,
     paddingVertical: space.md,
   },
-  buttonPressed: { backgroundColor: colors.tealPressed },
+  buttonPressed: { backgroundColor: colors.clayPressed },
   buttonInert: { backgroundColor: colors.disabledBg },
   content: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
-  label: { ...type.button, color: colors.onTeal, textAlign: 'center' },
+  label: { ...type.button, color: colors.onClay, textAlign: 'center' },
   labelInert: { color: colors.disabledInk },
 });

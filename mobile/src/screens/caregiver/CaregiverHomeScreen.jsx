@@ -408,7 +408,7 @@ const styles = StyleSheet.create({
     // which is what makes the column scannable.
     letterSpacing: 0.2,
   },
-  visitRule: { width: 2, alignSelf: 'stretch', borderRadius: 1, backgroundColor: colors.tealSoft },
+  visitRule: { width: 2, alignSelf: 'stretch', borderRadius: 1, backgroundColor: colors.claySoft },
   visitBody: { flex: 1, gap: 2 },
   visitNameRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
   visitName: { ...type.bodyMedium, fontSize: 14, color: colors.ink, flexShrink: 1 },

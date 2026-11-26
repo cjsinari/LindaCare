@@ -112,7 +112,7 @@ export default function FamilyHomeScreen({ navigation }) {
                     >
                       <View style={styles.nextRow}>
                         <View style={styles.nextIcon}>
-                          <Ionicons name="calendar" size={18} color={colors.teal} />
+                          <Ionicons name="calendar" size={18} color={colors.clay} />
                         </View>
                         <View style={styles.nextText}>
                           <Text style={styles.nextWhen}>{dayAndTime(data.nextVisit.at)}</Text>
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 14,
-    backgroundColor: colors.tealSoft,
+    backgroundColor: colors.claySoft,
     alignItems: 'center',
     justifyContent: 'center',
   },

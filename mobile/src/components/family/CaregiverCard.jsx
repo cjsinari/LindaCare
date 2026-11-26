@@ -57,7 +57,7 @@ export default function CaregiverCard({ caregiver, compact = false, style }) {
   return (
     <Card style={[styles.card, style]}>
       <View style={styles.head}>
-        <Avatar name={caregiver.fullName} size={compact ? 'md' : 'lg'} tone="teal" />
+        <Avatar name={caregiver.fullName} size={compact ? 'md' : 'lg'} tone="accent" />
         <View style={styles.text}>
           <Text style={styles.name} numberOfLines={1}>{caregiver.fullName}</Text>
           <Text style={styles.role} numberOfLines={1}>{caregiver.role}</Text>

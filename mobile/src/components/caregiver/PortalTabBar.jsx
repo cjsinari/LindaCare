@@ -68,7 +68,7 @@ export default function PortalTabBar({ state, navigation, insets }) {
               <Ionicons
                 name={focused ? item.iconActive : item.icon}
                 size={21}
-                color={focused ? colors.teal : colors.inkMuted}
+                color={focused ? colors.clay : colors.inkMuted}
               />
             </View>
             <Text style={[styles.label, focused && styles.labelActive]} numberOfLines={1}>
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  pillActive: { backgroundColor: colors.tealSoft },
+  pillActive: { backgroundColor: colors.claySoft },
   label: { ...type.caption, fontSize: 13, lineHeight: 14, color: colors.inkMuted },
   labelActive: { fontFamily: type.button.fontFamily, color: colors.ink },
 });

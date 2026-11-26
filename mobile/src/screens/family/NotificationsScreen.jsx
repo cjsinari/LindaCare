@@ -40,7 +40,7 @@ const ICONS = {
   visit: { name: 'checkmark-circle', tint: colors.success, bg: colors.successBg },
   note: { name: 'document-text', tint: colors.info, bg: colors.infoBg },
   incident: { name: 'warning', tint: colors.warning, bg: colors.warningBg },
-  schedule: { name: 'calendar', tint: colors.teal, bg: colors.tealSoft },
+  schedule: { name: 'calendar', tint: colors.clay, bg: colors.claySoft },
   account: { name: 'shield-checkmark', tint: colors.navy, bg: colors.surfaceSunken },
 };
 
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
   title: { ...type.body, fontSize: 14, color: colors.ink, flexShrink: 1 },
   titleUnread: { fontFamily: type.button.fontFamily },
-  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.teal },
+  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.clay },
   message: { ...type.caption, color: colors.inkMuted },
   when: { ...type.caption, fontSize: 13, color: colors.inkMuted },
 });

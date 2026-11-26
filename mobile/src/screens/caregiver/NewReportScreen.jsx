@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     paddingVertical: space.lg - 2,
   },
   visitTime: { ...type.bodyMedium, fontSize: 14, color: colors.ink, width: 42 },
-  visitRule: { width: 2, alignSelf: 'stretch', borderRadius: 1, backgroundColor: colors.tealSoft },
+  visitRule: { width: 2, alignSelf: 'stretch', borderRadius: 1, backgroundColor: colors.claySoft },
   visitBody: { flex: 1, gap: 2 },
   visitName: { ...type.bodyMedium, fontSize: 14, color: colors.ink },
   visitMeta: { ...type.caption, fontSize: 14, color: colors.inkMuted },

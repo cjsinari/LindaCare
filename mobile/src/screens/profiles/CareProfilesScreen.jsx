@@ -129,7 +129,7 @@ function ProfileRow({ profile, onPress }) {
     >
       <View style={styles.row}>
         <View style={styles.rowIcon}>
-          <Ionicons name="person" size={18} color={colors.teal} />
+          <Ionicons name="person" size={18} color={colors.clay} />
         </View>
         <View style={styles.rowText}>
           <Text style={styles.name}>{profile.fullName}</Text>
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 14,
-    backgroundColor: colors.tealSoft,
+    backgroundColor: colors.claySoft,
     alignItems: 'center',
     justifyContent: 'center',
   },

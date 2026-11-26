@@ -173,7 +173,7 @@ export default function RecipientDetailScreen({ navigation, route }) {
                           <Ionicons
                             name={contact.isPrimary ? 'star' : 'call-outline'}
                             size={16}
-                            color={contact.isPrimary ? colors.warning : colors.teal}
+                            color={contact.isPrimary ? colors.warning : colors.clay}
                           />
                         </View>
                         <View style={styles.contactBody}>
@@ -184,7 +184,7 @@ export default function RecipientDetailScreen({ navigation, route }) {
                           </Text>
                         </View>
                         <Text style={styles.contactPhone}>{contact.phone}</Text>
-                        <Ionicons name="call" size={16} color={colors.teal} />
+                        <Ionicons name="call" size={16} color={colors.clay} />
                       </Touchable>
                     </View>
                   ))}

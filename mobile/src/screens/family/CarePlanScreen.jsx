@@ -122,7 +122,7 @@ function Plan({ recipient, navigation }) {
               <Text style={styles.blockLabel}>GOALS</Text>
               {plan.goals.map((goal) => (
                 <View key={goal} style={styles.goal}>
-                  <Ionicons name="flag-outline" size={14} color={colors.teal} />
+                  <Ionicons name="flag-outline" size={14} color={colors.clay} />
                   <Text style={styles.goalText}>{goal}</Text>
                 </View>
               ))}
