@@ -124,7 +124,7 @@ function Feed({ recipient, name }) {
     if (feed.loadingMore) {
       return (
         <View style={styles.footer} accessibilityLabel="Loading older updates">
-          <ActivityIndicator color={colors.teal} />
+          <ActivityIndicator color={colors.clay} />
         </View>
       );
     }
@@ -191,8 +191,8 @@ function Feed({ recipient, name }) {
         <RefreshControl
           refreshing={feed.refreshing}
           onRefresh={feed.refresh}
-          tintColor={colors.teal}
-          colors={[colors.teal]}
+          tintColor={colors.clay}
+          colors={[colors.clay]}
           progressBackgroundColor={colors.surface}
         />
       )}
@@ -220,9 +220,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.fieldBorder,
   },
-  filterActive: { backgroundColor: colors.teal, borderColor: colors.teal },
+  filterActive: { backgroundColor: colors.clay, borderColor: colors.clay },
   filterText: { ...type.captionMedium, color: colors.inkMuted },
-  filterTextActive: { fontFamily: type.button.fontFamily, color: colors.onTeal },
+  filterTextActive: { fontFamily: type.button.fontFamily, color: colors.onClay },
 
   banner: { marginBottom: space.lg },
 

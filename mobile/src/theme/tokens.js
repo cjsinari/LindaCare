@@ -4,8 +4,8 @@
  * Named here so no screen below this file carries a raw hex value. The web
  * console has the same arrangement in frontend/src/styles/tokens.css, and the
  * two now share a *method* even though they do not share a palette: the
- * console is brand blue on bone, this is navy and teal on a near-white cool
- * grey, and both draw a surface the same way -- a hairline that defines the
+ * console is brand blue on bone, this is navy and clay on warm sand, and both
+ * draw a surface the same way -- a hairline that defines the
  * edge, a shadow small enough you would not notice it was there, and accent
  * colour reserved for the things you can act on.
  *
@@ -13,17 +13,18 @@
  * assembled rather than designed was not the brand colours; it was four habits
  * around them:
  *
- *   1. A saturated page.  #eaf1f6 is a visibly blue grey, and every white card
- *      on it read as a cut-out. `page` is now #e6ecf3: cool enough that a
- *      white card separates from it by tone rather than by shadow, flat
- *      enough that it never competes with one.
+ *   1. A saturated page.  #eaf1f6 was a visibly blue grey, and every white
+ *      card on it read as a cut-out. A first pass took it to #f4f6f8 and
+ *      overshot: two steps off white is not a page, it is more white, and a
+ *      screen of white cards on it read as one undifferentiated sheet.
  *
- *      The first pass of the restyle took it to #f4f6f8 and overshot. Two
- *      steps off white is not a page, it is more white: a screen of white
- *      cards on it read as one undifferentiated sheet, which is the same
- *      problem as the cut-outs wearing different clothes. #e6ecf3 is the
- *      darkest the page can go while `inkMuted` still clears 4.5:1 on it,
- *      which is what set the value.
+ *      `page` is now #EDE3D4, a warm sand, and the value took a third pass:
+ *      #F2ECE4 corrected the overshoot but undershot in the other direction,
+ *      carrying so little chroma that it read as white gone dirty rather than
+ *      as a colour. It separates a white card by tone rather than by shadow,
+ *      it is flat enough never to compete with one, and it is the half of the
+ *      palette doing the most work to stop these screens reading as clinical.
+ *      See note 5 for why it is warm.
  *
  *   2. Shadow doing the work of a line.  Every card, tile, search bar and
  *      segmented control floated on a soft 12dp drop shadow and had no edge at
@@ -34,19 +35,57 @@
  *      footer, the drawer over its scrim) keep a real shadow, and they are now
  *      the only things that do.
  *
- *   3. Mint standing in for teal.  `tealSoft` was #e4f4ec, byte-for-byte the
- *      same value as `successBg`, so every soft brand tint on these screens was
- *      actually the success green -- including PillButton's `tonal` variant,
- *      which drew teal-branded secondary actions in green on mint. `tealSoft`
- *      is now an actual desaturated teal and `tealInk` is the ink that goes on
- *      it, which also means "secondary action" and "this went well" have
- *      stopped being the same colour.
+ *   3. Mint standing in for the accent.  `tealSoft` was #e4f4ec, byte-for-byte
+ *      the same value as `successBg`, so every soft brand tint on these screens
+ *      was actually the success green -- including PillButton's `tonal`
+ *      variant, which drew brand-coloured secondary actions in green on mint.
+ *      The soft tint is now `claySoft`, a real tint of the accent, with
+ *      `clayInk` as the ink that goes on it, so "secondary action" and "this
+ *      went well" are no longer the same colour.
  *
  *   4. Corners competing with each other.  26dp cards around 18dp inners
  *      around 14dp controls, beside fully round pills, on a 16dp auth card.
  *      The scale is tightened and still concentric (see `oneui.radius`).
  *
- * The brand is untouched: navy #15314f, teal #17807d, the same status family.
+ *   5. Two cool colours, for eyes that stop seeing cool.  This is the change
+ *      the rest of the palette is built around, so it is worth the space.
+ *
+ *      The lens of the human eye yellows progressively from the mid-forties.
+ *      It is not a disease, it happens to everybody, and it absorbs short
+ *      wavelengths: blues and greens arrive dimmer and less separated than
+ *      they left. The person this app is for is a son or daughter in their
+ *      forties or fifties arranging care for a parent, which means navy and
+ *      teal -- two cool hues, close in both wavelength and lightness -- was
+ *      very nearly the worst pair this app could have chosen. It is the
+ *      combination that flattens first.
+ *
+ *      The navy stays, because that is what the product is saying: this is
+ *      somewhere you can safely hand over your mother's address. The teal is
+ *      replaced by clay, #A8432A -- the red earth you stand on anywhere from
+ *      Nairobi outward, which is where the warmth in the neutrals comes from
+ *      too.
+ *
+ *      Three things follow from it, none of them decorative:
+ *
+ *      - Warm hues are the ones the yellowing lens leaves alone. An accent
+ *        that stays vivid for a fifty-year-old is worth more here than one
+ *        that photographs well.
+ *      - Blue against orange-red is the single most separable pair there is
+ *        for deuteranopia and protanopia, which between them account for most
+ *        colour blindness and almost all of it in men. Navy against teal is
+ *        among the least.
+ *      - It measures better. White on teal was 4.75:1, scraping AA; white on
+ *        clay is 6.00:1. Teal against navy was 2.79:1, under the 3:1 that
+ *        1.4.11 asks of a boundary, so an accent control on the hero header
+ *        had no legible edge. `clayOnNavy` exists for exactly that surface
+ *        and clears 6.72:1.
+ *
+ *      `danger` moved with it, from #c0392b to a deeper #9B1C2E, because an
+ *      orange-red accent beside an orange-red alarm is two things wearing one
+ *      colour. `warning` went from #8a5a10 to a more olive #7A5B00 for the
+ *      same reason. Both still carry an icon and a word, which is what
+ *      actually does the work under 1.4.1; the hue shift is so that a glance
+ *      down a list is not misleading before the words are read.
  *
  * -- Contrast --
  *
@@ -54,29 +93,39 @@
  * against WCAG 2.1 AA (4.5:1 body text, 3:1 large text and UI boundaries):
  *
  *   ink on surface              #14283d on #ffffff   14.99:1  AAA
- *   label on surface            #46678a on #ffffff    5.89:1  AA
- *   label on page               #46678a on #e6ecf3    4.95:1  AA
+ *   ink on page                 #14283d on #EDE3D4   11.81:1  AAA
+ *   label on surface            #3F5F82 on #ffffff    6.62:1  AA
+ *   label on page               #3F5F82 on #EDE3D4    5.22:1  AA
  *   inkMuted on surface         #3f5a76 on #ffffff    7.15:1  AAA
- *   inkMuted on page            #3f5a76 on #e6ecf3    6.02:1  AA
- *   inkMuted on surfaceSunken   #3f5a76 on #eef1f5    6.31:1  AA
+ *   inkMuted on page            #3f5a76 on #EDE3D4    5.63:1  AA
+ *   inkMuted on surfaceSunken   #3f5a76 on #E4DACA    5.17:1  AA
+ *   inkMuted on field           #3f5a76 on #FCF9F4    6.81:1  AA
  *   white on navy               #ffffff on #15314f   13.26:1  AAA
  *   navy subtitle on navy       #9bb3cc on #15314f    6.13:1  AA
- *   white on teal (button)      #ffffff on #17807d    4.75:1  AA
- *   tealInk on tealSoft         #0f5e5c on #e6f0ef    6.51:1  AA
+ *   white on clay (button)      #ffffff on #A8432A    6.00:1  AA
+ *   white on clayPressed        #ffffff on #8E3722    7.72:1  AAA
+ *   clay as text on surface     #A8432A on #ffffff    6.00:1  AA
+ *   clayInk on claySoft         #8E3722 on #FBE9E2    6.57:1  AA
+ *   clayOnNavy on navy          #F3A68B on #15314f    6.72:1  AA
+ *   clayOnNavy on navyDeep      #F3A68B on #102640    7.75:1  AAA
+ *   clayOnNavy on navyRaised    #F3A68B on #1d4169    5.29:1  AA
+ *   clayOnNavy on sidebar       #F3A68B on #0d2440    7.92:1  AAA
  *   link on surface             #1c5c96 on #ffffff    6.95:1  AA
  *   success on mint banner      #15674e on #e4f4ec    5.99:1  AA
- *   warning on amber banner     #8a5a10 on #fdf2e2    5.34:1  AA
- *   danger on surface           #c0392b on #ffffff    5.44:1  AA
+ *   warning on amber banner     #7A5B00 on #FBF1DC    5.63:1  AA
+ *   danger on surface           #9B1C2E on #ffffff    8.08:1  AAA
+ *   danger on its banner        #9B1C2E on #FBE9EC    6.91:1  AA
  *   info on blue banner         #2a5f93 on #e8f1fa    5.83:1  AA
- *   field border on surface     #7e94aa on #ffffff    3.13:1  AA (1.4.11)
- *   teal focus ring on field    #17807d on #f7f9fb    4.50:1  AA (1.4.11)
+ *   field border on surface     #8C7B68 on #ffffff    4.08:1  AA (1.4.11)
+ *   field border on page        #8C7B68 on #EDE3D4    3.21:1  AA (1.4.11)
+ *   clay focus ring on field    #A8432A on #FCF9F4    5.71:1  AA (1.4.11)
  *
  * -- The resting field border now passes, and that is a fix, not a tidy-up --
  *
  * It used to be #e2eaf1 on #ffffff: 1.22:1, well under the 3:1 that WCAG
  * 1.4.11 asks of a component boundary, and logged in issue #47 as a knowing
  * deviation with two ways out -- darken it, or accept it in writing. The
- * restyle takes the first: `fieldBorder` is #7e94aa at 3.13:1, drawn at 1dp
+ * restyle takes the first: `fieldBorder` is #8C7B68 at 4.08:1, drawn at 1dp
  * instead of 1.5dp. A thin line in a colour you can see reads as sharper than
  * a thick one you cannot, so the accessible answer is also the sleeker one
  * here. Issue #47's remaining business is the touch-target sweep.
@@ -89,7 +138,7 @@
  *
  * -- The two that still do not reach a threshold, and why each is allowed to --
  *
- * Placeholder text, #93a7bb on #f7f9fb, is 2.34:1. It is exempt only because
+ * Placeholder text, #93a7bb on #FCF9F4, is 2.36:1. It is exempt only because
  * it never carries information: every field in this app has a permanently
  * visible label above it, and the placeholder repeats a format hint at most.
  * A placeholder standing in for a label would not be exempt, which is the
@@ -103,7 +152,7 @@
  * at 2.34:1 none of it passed. Those now use `inkMuted`. The token is back to
  * meaning the one thing it is exempt for: the hint inside an empty input.
  *
- * Disabled button ink, #8fa0b1 on #eceff3, is 2.33:1 and is exempt under
+ * Disabled button ink, #8A7D6E on #E8DFD2, is 3.04:1 and is exempt under
  * 1.4.3, which excludes inactive controls. The submit button spends real time
  * disabled on these forms, so it never communicates by colour alone: the
  * reason it cannot be pressed is always also stated in text beneath it.
@@ -114,28 +163,52 @@ export const colors = {
   navy: '#15314f',          // hero header, splash
   navyDeep: '#102640',      // the lower half of the header gradient
   navyRaised: '#1d4169',    // cards sitting on navy (the frozen screen)
-  teal: '#17807d',          // primary action, logo tile
-  tealPressed: '#126663',
-  // A desaturated teal tint, and the ink that goes on it. This used to be the
+  clay: '#A8432A',          // primary action, logo tile
+  clayPressed: '#8E3722',
+  // A tint of the accent, and the ink that goes on it. This used to be the
   // success green by accident; see note 3 at the top of the file.
-  tealSoft: '#e6f0ef',
-  tealSoftPressed: '#d8e8e7',
-  tealInk: '#0f5e5c',
+  claySoft: '#FBE9E2',
+  claySoftPressed: '#F6DCD1',
+  clayInk: '#8E3722',
+  /*
+   * The accent as it has to be drawn on a navy surface.
+   *
+   * `clay` cannot be used there. Any accent dark enough to carry white text on
+   * a white card (6.00:1) is necessarily close to navy in lightness -- clay
+   * against navy is 2.61:1, under the 3:1 a boundary needs and nowhere near
+   * readable as text. This is the same light tint, and it is the only accent
+   * value permitted on navy, navyDeep, navyRaised or the sidebar.
+   */
+  clayOnNavy: '#F3A68B',
 
   // -- Surfaces --
-  page: '#e6ecf3',          // behind the white cards: cool, and tinted enough
-                            // that a card reads as a card without a shadow
+  /*
+   * Warm sand behind the white cards.
+   *
+   * It was #F2ECE4 and that was too timid: barely a tenth of a step off white,
+   * with so little chroma that it read as white that had got dirty rather than
+   * as a colour anybody chose. A white card on it separated by 1.17:1, which
+   * is why the screens looked flat.
+   *
+   * #EDE3D4 is roughly twice the chroma and a step deeper, so the sand reads
+   * as sand and a card reads as a card. The ceiling is `label`: at the next
+   * step down it drops under 4.5:1 on this ground, and that is what set the
+   * value rather than taste.
+   */
+  page: '#EDE3D4',
   surface: '#ffffff',
-  surfaceSunken: '#eef1f5', // an inset fill: a pressed row, a neutral chip
-  field: '#f7f9fb',         // an input's own fill
+  surfaceSunken: '#E4DACA', // an inset fill: a pressed row, a neutral chip
+  field: '#FCF9F4',         // an input's own fill, lifted nearly to white so a
+                            // field still reads as a field on the deeper page
 
   // -- Lines --
   // A grouping hairline. Alpha rather than a solid, so one token holds up over
-  // both `surface` and `page`.
-  border: 'rgba(20, 40, 61, 0.10)',
+  // both `surface` and `page`. Warm-tinted to match the neutrals: a cool grey
+  // line on a sand card is the detail that makes a warm palette look accidental.
+  border: 'rgba(61, 44, 30, 0.12)',
   // The boundary of something you operate: an input, an outlined control.
-  fieldBorder: '#7e94aa',
-  fieldBorderFocus: '#17807d',
+  fieldBorder: '#8C7B68',
+  fieldBorderFocus: '#A8432A',
 
   // -- Ink --
   ink: '#14283d',
@@ -153,32 +226,38 @@ export const colors = {
    * text stops being a failure, not the point at which it becomes comfortable.
    */
   inkMuted: '#3f5a76',
-  label: '#46678a',         // the uppercase field labels
+  label: '#3F5F82',         // the uppercase field labels, darkened a step when
+                            // `page` deepened: 12dp uppercase is small text and
+                            // was the token with the least headroom left
   placeholder: '#93a7bb',
   onNavy: '#ffffff',
   // Desaturated from #7cb0e8. A bright sky blue on navy was the loudest thing
   // on the sign-in screen, and it is subtitle text, which should be the
   // quietest. 6.13:1 -- so it got quieter without getting harder to read.
   onNavyMuted: '#9bb3cc',
-  onTeal: '#ffffff',
+  onClay: '#ffffff',
+  // Links stay blue. It is the one colour convention older users rely on
+  // without being taught it, and spending the accent on it would make every
+  // link compete with the button it sits beside.
   link: '#1c5c96',
 
   // -- Status --
-  // Unchanged. These pairs were measured, and they are already what the
-  // console does with status: a tinted ground, its own ink, never colour alone.
+  // A tinted ground, its own ink, never colour alone -- the same arrangement
+  // the console uses. `danger` and `warning` were pulled away from the accent
+  // when it became clay; see note 5 at the top of the file.
   success: '#15674e',
   successBg: '#e4f4ec',
-  warning: '#8a5a10',
-  warningBg: '#fdf2e2',
-  danger: '#c0392b',
-  dangerBg: '#fdecea',
-  dangerBgPressed: '#f9d9d5',
+  warning: '#7A5B00',
+  warningBg: '#FBF1DC',
+  danger: '#9B1C2E',
+  dangerBg: '#FBE9EC',
+  dangerBgPressed: '#F6D6DB',
   info: '#2a5f93',
   infoBg: '#e8f1fa',
 
   // -- Disabled --
-  disabledBg: '#eceff3',
-  disabledInk: '#8fa0b1',
+  disabledBg: '#E8DFD2',
+  disabledInk: '#8A7D6E',
 };
 
 export const space = {
@@ -417,12 +496,23 @@ export const oneui = {
  *   sidebarInk on sidebar        #e8f0f8 on #0d2440   13.58:1  AAA
  *   sidebarInkMuted on sidebar   #8fb0d4 on #0d2440    6.94:1  AA
  *   sidebarHeading on sidebar    #6f91b6 on #0d2440    4.76:1  AA
- *   onTeal on teal (active row)  #ffffff on #17807d    4.75:1  AA
+ *   activeInk on active row      #15314f on #F3A68B    6.72:1  AA
+ *   active row fill vs sidebar   #F3A68B on #0d2440    7.92:1  (1.4.11)
+ *
+ * The active row is the one place in this app where the accent is drawn as
+ * `clayOnNavy` with navy ink on it rather than white on `clay`. Clay as a fill
+ * here would be 2.61:1 against the sidebar -- the row would be the right
+ * colour and have no visible edge, which is the state indicator failing at the
+ * only thing it is for. The brand mark and the avatar beside it keep the solid
+ * clay, because a logo tile is decoration and 1.4.11 does not reach it.
  */
 export const sidebarColors = {
   surface: '#0d2440',
-  active: colors.teal,
-  activePressed: colors.tealPressed,
+  active: colors.clayOnNavy,
+  activePressed: '#E8917A',
+  // What goes *on* the active row. Navy, not white: white on the light
+  // accent is 1.97:1, which is the trap this token exists to close.
+  activeInk: colors.navy,
   hover: '#16355a',
   ink: '#e8f0f8',
   inkMuted: '#8fb0d4',

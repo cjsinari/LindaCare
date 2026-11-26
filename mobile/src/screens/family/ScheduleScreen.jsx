@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     paddingVertical: space.lg - 2,
   },
   time: { ...type.bodyMedium, fontSize: 14, color: colors.ink, width: 42 },
-  rule: { width: 2, alignSelf: 'stretch', borderRadius: 1, backgroundColor: colors.tealSoft },
+  rule: { width: 2, alignSelf: 'stretch', borderRadius: 1, backgroundColor: colors.claySoft },
   body: { flex: 1, gap: 2 },
   kind: { ...type.bodyMedium, fontSize: 14, color: colors.ink },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: space.xs + 1 },

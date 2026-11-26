@@ -31,7 +31,7 @@ import { initials } from '../../utils/datetime';
  *   The icons stay 48dp. A 68dp rail has the room; what it does not have is an
  *   excuse to shrink the targets to fit a label that is no longer there.
  *
- *   The active item is not only teal. It carries a filled icon against the
+ *   The active item is not only the accent colour. It carries a filled icon against the
  *   outline used by the rest, so which page you are on survives both the rail
  *   and a colour vision deficiency.
  *
@@ -148,7 +148,7 @@ export default function Sidebar({ navigation, active }) {
           </Animated.Text>
         ) : (
           <View style={styles.brandMark} importantForAccessibility="no">
-            <Ionicons name="shield-checkmark" size={18} color={colors.onTeal} />
+            <Ionicons name="shield-checkmark" size={18} color={colors.onClay} />
           </View>
         )}
 
@@ -196,7 +196,7 @@ export default function Sidebar({ navigation, active }) {
               <Ionicons
                 name={isActive ? item.iconActive : item.icon}
                 size={20}
-                color={isActive ? colors.onTeal : sidebarColors.inkMuted}
+                color={isActive ? sidebarColors.activeInk : sidebarColors.inkMuted}
               />
               {/* Unmounted, not faded: see the note at the top. */}
               {showLabels ? (
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 12,
-    backgroundColor: colors.teal,
+    backgroundColor: colors.clay,
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
   itemRail: { justifyContent: 'center', paddingHorizontal: 0 },
   itemActive: { backgroundColor: sidebarColors.active },
   itemLabel: { ...type.bodyMedium, fontSize: 14, color: sidebarColors.inkMuted, flexShrink: 1 },
-  itemLabelActive: { fontFamily: type.button.fontFamily, color: colors.onTeal },
+  itemLabelActive: { fontFamily: type.button.fontFamily, color: sidebarColors.activeInk },
 
   spacer: { flex: 1, minHeight: space.xl },
 
@@ -348,11 +348,11 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 12,
-    backgroundColor: colors.teal,
+    backgroundColor: colors.clay,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarText: { fontFamily: type.button.fontFamily, fontSize: 14, color: colors.onTeal },
+  avatarText: { fontFamily: type.button.fontFamily, fontSize: 14, color: colors.onClay },
   accountText: { flex: 1 },
   accountName: { ...type.captionMedium, color: sidebarColors.ink },
   accountRole: { ...type.caption, fontSize: 13, color: sidebarColors.inkMuted },

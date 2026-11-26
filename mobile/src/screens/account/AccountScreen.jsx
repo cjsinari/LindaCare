@@ -94,7 +94,7 @@ export default function AccountScreen({ navigation }) {
           accessibilityHint="Opens your profile, where you can change your name and phone number"
         >
           <View style={styles.profileRow}>
-            <Avatar name={user?.fullName} size="lg" tone="teal" />
+            <Avatar name={user?.fullName} size="lg" tone="accent" />
             <View style={styles.profileText}>
               <Text style={styles.name} numberOfLines={1}>{user?.fullName || 'Your profile'}</Text>
               {user?.phoneNumber ? <Text style={styles.meta}>{user.phoneNumber}</Text> : null}
@@ -126,7 +126,7 @@ export default function AccountScreen({ navigation }) {
                   value={pushOn}
                   onValueChange={togglePush}
                   disabled={pushBusy || pushStatus === 'unsupported'}
-                  trackColor={{ true: colors.teal, false: colors.fieldBorder }}
+                  trackColor={{ true: colors.clay, false: colors.fieldBorder }}
                   thumbColor={colors.surface}
                   accessibilityLabel="Push notifications"
                 />
@@ -154,7 +154,7 @@ export default function AccountScreen({ navigation }) {
                   <Switch
                     value={c.enabled}
                     onValueChange={(on) => setCategory(c.key, on)}
-                    trackColor={{ true: colors.teal, false: colors.fieldBorder }}
+                    trackColor={{ true: colors.clay, false: colors.fieldBorder }}
                     thumbColor={colors.surface}
                     accessibilityLabel={c.label}
                     accessibilityHint={c.hint}

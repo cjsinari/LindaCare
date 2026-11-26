@@ -112,8 +112,8 @@ export default function PortalShell({
         <RefreshControl
           refreshing={refreshing}
           onRefresh={onRefresh}
-          tintColor={colors.teal}
-          colors={[colors.teal]}
+          tintColor={colors.clay}
+          colors={[colors.clay]}
           progressBackgroundColor={colors.surface}
         />
       ) : undefined}

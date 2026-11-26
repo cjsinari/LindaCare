@@ -112,7 +112,10 @@ export default function BrandSplash({ ready, onFinished }) {
         ]}
       >
         <View style={styles.mark}>
-          <Ionicons name="shield-checkmark" size={40} color={colors.onTeal} />
+          {/* Navy on the light accent, not white: see `clayOnNavy` in tokens.js.
+              The solid accent on a navy ground is 2.61:1 and reads as a dark
+              smudge, which is not what the first screen of the app should be. */}
+          <Ionicons name="shield-checkmark" size={40} color={colors.navy} />
         </View>
 
         <Text style={styles.name}>{BRAND_NAME}</Text>
@@ -120,7 +123,7 @@ export default function BrandSplash({ ready, onFinished }) {
       </Animated.View>
 
       <View style={[styles.foot, { paddingBottom: Math.max(insets.bottom, space.xl) }]}>
-        <ActivityIndicator color={colors.teal} />
+        <ActivityIndicator color={colors.clayOnNavy} />
         {/*
           Hidden from assistive tech because the wrapper has already said
           "Starting": a screen reader should not hear the same state twice
@@ -166,7 +169,7 @@ const styles = StyleSheet.create({
     width: 84,
     height: 84,
     borderRadius: radius.sheet + 4,
-    backgroundColor: colors.teal,
+    backgroundColor: colors.clayOnNavy,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: space.xl,

@@ -30,7 +30,7 @@ const SIZES = {
 
 export default function Avatar({ name, size = 'md', tone = 'navy', style }) {
   const s = SIZES[size] || SIZES.md;
-  const background = tone === 'teal' ? colors.teal : colors.navy;
+  const background = tone === 'accent' ? colors.clay : colors.navy;
 
   return (
     <View

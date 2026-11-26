@@ -140,7 +140,7 @@ export default function ProfileScreen({ navigation }) {
           <Card style={styles.card}>
             <View style={styles.phoneRow} accessible accessibilityLabel={`Phone number: ${user?.phoneNumber || 'not set'}`}>
               <View style={styles.phoneIcon}>
-                <Ionicons name="phone-portrait-outline" size={18} color={colors.teal} />
+                <Ionicons name="phone-portrait-outline" size={18} color={colors.clay} />
               </View>
               <View style={styles.phoneText}>
                 <Text style={styles.phone}>{user?.phoneNumber || '—'}</Text>
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 14,
-    backgroundColor: colors.tealSoft,
+    backgroundColor: colors.claySoft,
     alignItems: 'center',
     justifyContent: 'center',
   },

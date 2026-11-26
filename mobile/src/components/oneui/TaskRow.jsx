@@ -52,7 +52,7 @@ export default function TaskRow({
       }
     >
       <View style={[styles.box, done && styles.boxDone, Boolean(error) && styles.boxError]}>
-        {done ? <Ionicons name="checkmark" size={15} color={colors.onTeal} /> : null}
+        {done ? <Ionicons name="checkmark" size={15} color={colors.onClay} /> : null}
       </View>
 
       <View style={styles.body}>
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  boxDone: { backgroundColor: colors.teal, borderColor: colors.teal },
+  boxDone: { backgroundColor: colors.clay, borderColor: colors.clay },
   boxError: { borderColor: colors.danger },
 
   body: { flex: 1, gap: 1 },

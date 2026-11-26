@@ -39,7 +39,7 @@ export default function Checkbox({ checked, onChange, onBlur, error, children, a
         accessibilityHint={error}
       >
         <View style={[styles.box, checked && styles.boxChecked, Boolean(error) && styles.boxError]}>
-          {checked ? <Ionicons name="checkmark" size={15} color={colors.onTeal} /> : null}
+          {checked ? <Ionicons name="checkmark" size={15} color={colors.onClay} /> : null}
         </View>
         <Text style={styles.text}>{children}</Text>
       </Pressable>
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     // of a label that wraps to three lines.
     marginTop: 1,
   },
-  boxChecked: { backgroundColor: colors.teal, borderColor: colors.teal },
+  boxChecked: { backgroundColor: colors.clay, borderColor: colors.clay },
   boxError: { borderColor: colors.danger },
   text: { ...type.caption, color: colors.inkMuted, flex: 1 },
 });

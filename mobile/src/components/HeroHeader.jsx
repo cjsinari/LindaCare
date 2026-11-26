@@ -57,7 +57,7 @@ export default function HeroHeader({
       {brand ? (
         <View style={styles.brandRow}>
           <View style={styles.mark}>
-            <Ionicons name="shield-checkmark" size={20} color={colors.onTeal} />
+            <Ionicons name="shield-checkmark" size={20} color={colors.navy} />
           </View>
           <View style={styles.brandText}>
             <Text style={styles.brandName}>{brand}</Text>
@@ -68,7 +68,9 @@ export default function HeroHeader({
 
       {icon && !brand ? (
         <View style={styles.mark}>
-          <Ionicons name={icon} size={22} color={colors.onTeal} />
+          {/* Navy on the light accent: the mark sits on the navy header, where
+              the solid accent has no usable contrast. See tokens.js. */}
+          <Ionicons name={icon} size={22} color={colors.navy} />
         </View>
       ) : null}
 
@@ -107,7 +109,7 @@ const styles = StyleSheet.create({
     width: 42,
     height: 42,
     borderRadius: radius.md + 2,
-    backgroundColor: colors.teal,
+    backgroundColor: colors.clayOnNavy,
     alignItems: 'center',
     justifyContent: 'center',
   },

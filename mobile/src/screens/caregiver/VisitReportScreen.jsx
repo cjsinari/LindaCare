@@ -482,7 +482,7 @@ function TimeSlot({ label, value, icon }) {
         <Ionicons
           name={icon}
           size={15}
-          color={recorded ? colors.teal : colors.placeholder}
+          color={recorded ? colors.clay : colors.placeholder}
         />
       </View>
     </View>
@@ -508,7 +508,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.field,
     paddingHorizontal: space.md,
   },
-  timeBoxFilled: { borderColor: colors.fieldBorderFocus, backgroundColor: colors.tealSoft },
+  timeBoxFilled: { borderColor: colors.fieldBorderFocus, backgroundColor: colors.claySoft },
   timeValue: { ...type.bodyMedium, fontSize: 16, color: colors.ink, letterSpacing: 1 },
   timeValueEmpty: { color: colors.placeholder },
   durationText: { ...type.caption, fontSize: 14, color: colors.inkMuted, paddingTop: space.md },

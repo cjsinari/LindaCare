@@ -164,7 +164,7 @@ export default function PhoneField({
                     >
                       {item.label}
                     </Text>
-                    {isSelected ? <Ionicons name="checkmark" size={18} color={colors.teal} /> : null}
+                    {isSelected ? <Ionicons name="checkmark" size={18} color={colors.clay} /> : null}
                   </Pressable>
                 );
               }}
@@ -270,6 +270,6 @@ const styles = StyleSheet.create({
   },
   optionPressed: { backgroundColor: colors.surfaceSunken },
   optionText: { ...type.body, color: colors.ink, flex: 1 },
-  optionTextSelected: { fontFamily: type.bodyMedium.fontFamily, color: colors.teal },
+  optionTextSelected: { fontFamily: type.bodyMedium.fontFamily, color: colors.clay },
   empty: { ...type.body, color: colors.inkMuted, textAlign: 'center', paddingVertical: space.xl },
 });

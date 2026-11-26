@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   boxFilled: { borderColor: colors.fieldBorderFocus, backgroundColor: colors.surface },
-  boxActive: { borderColor: colors.teal },
+  boxActive: { borderColor: colors.clay },
   boxError: { borderColor: colors.danger, backgroundColor: colors.dangerBg },
   digit: { ...type.title, color: colors.ink },
   hidden: {

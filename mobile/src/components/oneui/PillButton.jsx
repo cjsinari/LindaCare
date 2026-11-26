@@ -16,11 +16,11 @@ import { colors, oneui, space, type, TOUCH_TARGET } from '../../theme/tokens';
  *
  *   solid   the single most important action on a screen. One per screen.
  *   tonal   a secondary action that is still a real action -- "Check in" on a
- *           schedule row. Dark teal on a soft teal ground rather than white on
- *           full teal, so it does not compete with the solid one. It used to
- *           be drawn in the success green on a mint ground, because `tealSoft`
- *           and `successBg` were the same value; both halves of that are
- *           fixed in tokens.js.
+ *           schedule row. Deep clay on a soft clay ground rather than white
+ *           on full clay, so it does not compete with the solid one. It used
+ *           to be drawn in the success green on a mint ground, because the
+ *           soft tint and `successBg` were the same value; both halves of
+ *           that are fixed in tokens.js.
  *   quiet   a text action with no fill: "View all →". Still 48dp tall.
  *   danger  destructive, and visually separated from the rest.
  *
@@ -28,8 +28,8 @@ import { colors, oneui, space, type, TOUCH_TARGET } from '../../theme/tokens';
  * screens: every screen that disables this also says in text why.
  */
 const VARIANTS = {
-  solid: { bg: colors.teal, pressedBg: colors.tealPressed, fg: colors.onTeal },
-  tonal: { bg: colors.tealSoft, pressedBg: colors.tealSoftPressed, fg: colors.tealInk },
+  solid: { bg: colors.clay, pressedBg: colors.clayPressed, fg: colors.onClay },
+  tonal: { bg: colors.claySoft, pressedBg: colors.claySoftPressed, fg: colors.clayInk },
   quiet: { bg: 'transparent', pressedBg: colors.surfaceSunken, fg: colors.link },
   danger: { bg: colors.dangerBg, pressedBg: colors.dangerBgPressed, fg: colors.danger },
 };
