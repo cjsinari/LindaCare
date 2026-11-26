@@ -89,6 +89,64 @@ export function contactToE164(input) {
 }
 
 /**
+ * A contact as it should appear on screen: enough of it to recognise, not
+ * enough to write down.
+ *
+ * -- Why the verification screen masks a number the person just typed --
+ *
+ * Nothing is being withheld from them. The string comes from the previous
+ * screen rather than from the service, and whoever reads it is holding the
+ * phone that typed it, so this is not about what the account owner may know.
+ * It is about the other person: the one standing behind them while they wait
+ * for an SMS in a matatu, a queue or an office. Here the number is also the
+ * M-Pesa identity, which makes a full MSISDN sitting on a screen for as long
+ * as it takes to read a code worth rather more than a phone number usually is.
+ *
+ * It is also what the rest of the system already does. notifier.maskPhone
+ * renders a number as +2547****5678 in every audit detail, in the care-team
+ * listing and on the change-phone screen, and the verification screen was the
+ * only place left printing one in full. The format below is deliberately that
+ * same one, so the two never read as different numbers.
+ *
+ * The cost is real and worth stating: a mistyped digit in the masked middle no
+ * longer shows up here, and is caught instead by an SMS that never arrives.
+ * The dial code and the last four stay visible because those are what somebody
+ * checks when they suspect they typed the wrong number altogether.
+ */
+export function maskContact(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+  return raw.includes('@') ? maskEmail(raw) : maskPhone(raw);
+}
+
+/** +254712345678 -> +2547****5678, matching notifier.maskPhone in the service. */
+function maskPhone(phone) {
+  if (phone.length < 8) return phone;
+  return `${phone.slice(0, 5)}${'*'.repeat(Math.max(phone.length - 9, 2))}${phone.slice(-4)}`;
+}
+
+/**
+ * cyril@example.com -> cy***@example.com.
+ *
+ * The domain stays whole. It is the half that tells someone which inbox to go
+ * and open, and recovery is exactly the moment when they are least sure which
+ * address they used -- hiding it would withhold the one part they need.
+ *
+ * A single-character local part cannot be masked without disappearing, so it
+ * is left as it is rather than printed as a row of stars attached to nothing.
+ */
+function maskEmail(email) {
+  const at = email.lastIndexOf('@');
+  if (at < 1) return email;
+  const local = email.slice(0, at);
+  const keep = local.slice(0, Math.min(2, local.length - 1)) || local.slice(0, 1);
+  // A fixed run of stars, not one per hidden character: the length of an
+  // address is not information this screen needs to give away, and it keeps a
+  // long address from wrapping the subtitle onto a third line.
+  return `${keep}***${email.slice(at)}`;
+}
+
+/**
  * The phone number as a form field, built from the dial code in force.
  *
  * Shared by registration and sign-in so the two cannot drift: a number the

@@ -267,7 +267,10 @@ describe('recovery', () => {
     await renderScreen(recoveryParams);
 
     expect(screen.getByText('Check your email')).toBeTruthy();
-    expect(screen.getByText(/jane\.backup@example\.com/)).toBeTruthy();
+    // Masked, but the domain survives: it is the half that tells someone which
+    // inbox to open, and withholding it would defeat the point of the heading.
+    expect(screen.getByText(/ja\*\*\*@example\.com/)).toBeTruthy();
+    expect(screen.queryByText(/jane\.backup@example\.com/)).toBeNull();
   });
 
   it('resends through the recovery endpoint, not the OTP endpoint', async () => {
