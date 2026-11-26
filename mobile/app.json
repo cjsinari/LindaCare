@@ -13,7 +13,9 @@
     },
     "android": {
       "package": "ke.co.lindacare.app",
-      "adaptiveIcon": { "backgroundColor": "#15314f" },
+      "adaptiveIcon": {
+        "backgroundColor": "#15314f"
+      },
       "edgeToEdgeEnabled": true
     },
     "ios": {
@@ -22,12 +24,21 @@
     },
     "plugins": [
       "expo-secure-store",
-      ["expo-notifications", { "color": "#17807d" }]
+      [
+        "expo-notifications",
+        {
+          "color": "#17807d"
+        }
+      ]
     ],
     "extra": {
       "apiBaseUrl": "http://192.168.100.7:3000",
       "careApi": "auto",
-      "demoMode": false
-    }
+      "demoMode": false,
+      "eas": {
+        "projectId": "af3eea61-bba1-451e-a8f0-acf91716d62d"
+      }
+    },
+    "owner": "cjsinari"
   }
 }
