@@ -1,0 +1,49 @@
+# Caddy obtains and renews the HTTPS certificates itself (Let's Encrypt, with ZeroSSL
+# as a fallback). Ports 80 and 443 must be reachable from the internet.
+#
+# X-Forwarded-For: Caddy replaces any client-supplied value with the real client
+# address. That is what makes TRUST_PROXY=1 safe on the auth service: nobody can
+# spoof their location by sending the header.
+{
+	email {$ACME_EMAIL}
+}
+
+# ── Administrator dashboard + API ─────────────────────────────────────────────
+{$DOMAIN} {
+	encode zstd gzip
+
+	# /api/* → auth service, with the /api prefix removed.
+	handle_path /api/* {
+		reverse_proxy auth-service:3000
+	}
+
+	# Everything else is the dashboard's static files. These headers are the ones the
+	# application cannot set itself (SECURITY.md, A05).
+	handle {
+		header {
+			Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.tile.openstreetmap.org; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+			Strict-Transport-Security "max-age=15552000; includeSubDomains"
+			X-Frame-Options "DENY"
+			X-Content-Type-Options "nosniff"
+			Referrer-Policy "same-origin"
+		}
+		root * /srv/dashboard
+		try_files {path} /index.html
+		file_server
+	}
+}
+
+# ── Mobile app, Expo web build ────────────────────────────────────────────────
+# It calls the API at https://{$DOMAIN}/api from another origin, so that origin
+# must be in CORS_ORIGINS on the auth service (the compose file does this).
+{$APP_DOMAIN} {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=15552000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+	}
+	root * /srv/app
+	try_files {path} /index.html
+	file_server
+}

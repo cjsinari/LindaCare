@@ -1,0 +1,107 @@
+# LindaCare production stack: one VPS, one command.
+#   cp deploy/stack.env.example .env   (then fill it in)
+#   docker compose up -d --build
+# Only Caddy publishes ports. Postgres, Redis, the ML engine and the auth service
+# are reachable from inside this compose network and nowhere else.
+name: lindacare
+
+services:
+  postgres:
+    image: postgres:${PG_MAJOR:-17}-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-mzazicare_auth}
+      POSTGRES_USER: ${DB_USER:-lindacare}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # *.sql files here run once, on an empty data volume, in name order.
+      - ./deploy/db/initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    # Sessions live in Redis; append-only persistence keeps them across a restart.
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  ml-engine:
+    build: ./ml-engine
+    restart: unless-stopped
+
+  auth-service:
+    build: ./auth-service
+    restart: unless-stopped
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      ml-engine: { condition: service_started }
+    environment:
+      PORT: "3000"
+      # NODE_ENV=production switches OTP dev mode off, so codes go out by SMS.
+      # For the fallback in DEPLOY.md set APP_ENV=staging and OTP_DEV_MODE=true.
+      NODE_ENV: ${APP_ENV:-production}
+      OTP_DEV_MODE: ${OTP_DEV_MODE:-false}
+      # One hop in front of the service: Caddy.
+      TRUST_PROXY: "1"
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+      OTP_SECRET: ${OTP_SECRET:?set OTP_SECRET in .env}
+      NATIONAL_ID_SECRET: ${NATIONAL_ID_SECRET:?set NATIONAL_ID_SECRET in .env}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-15m}
+      REFRESH_TOKEN_EXPIRES_IN: ${REFRESH_TOKEN_EXPIRES_IN:-7d}
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: ${DB_NAME:-mzazicare_auth}
+      DB_USER: ${DB_USER:-lindacare}
+      DB_PASSWORD: ${DB_PASSWORD}
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      ML_ENGINE_URL: http://ml-engine:5000
+      AFRICAS_TALKING_API_KEY: ${AFRICAS_TALKING_API_KEY:-}
+      AFRICAS_TALKING_USERNAME: ${AFRICAS_TALKING_USERNAME:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+      # The dashboard is same-origin (no CORS involved). The Expo web build is not.
+      CORS_ORIGINS: https://${DOMAIN:?set DOMAIN in .env},https://${APP_DOMAIN:?set APP_DOMAIN in .env}
+
+  web:
+    build:
+      context: .
+      dockerfile: deploy/web/Dockerfile
+      args:
+        API_URL: https://${DOMAIN}/api
+        DEMO_MODE: ${DEMO_MODE:-true}
+    restart: unless-stopped
+    depends_on:
+      - auth-service
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      DOMAIN: ${DOMAIN}
+      APP_DOMAIN: ${APP_DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL:?set ACME_EMAIL in .env}
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  pgdata:
+  redisdata:
+  caddy_data:
+  caddy_config:

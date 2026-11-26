@@ -1,0 +1,7 @@
+# Files that run on the Linux VPS must keep LF line endings even when committed
+# from Windows, or the shell reports "bad interpreter: /usr/bin/env: bash\r".
+*.sh        text eol=lf
+Dockerfile  text eol=lf
+Caddyfile   text eol=lf
+*.yml       text eol=lf
+*.sql       text eol=lf

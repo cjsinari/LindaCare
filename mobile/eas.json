@@ -1,0 +1,23 @@
+{
+  "cli": {
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "demo": {
+      "distribution": "internal",
+      "android": { "buildType": "apk" },
+      "env": {
+        "API_URL": "https://lindacare.me/api",
+        "DEMO_MODE": "true"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": { "buildType": "apk" },
+      "env": {
+        "API_URL": "https://lindacare.me/api",
+        "DEMO_MODE": "false"
+      }
+    }
+  }
+}
