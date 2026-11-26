@@ -41,6 +41,13 @@ const BASE = (import.meta.env?.VITE_API_BASE_URL || '/api').replace(/\/$/, '');
 /** How many recent events to hold for the notification list. */
 const KEEP = 50;
 
+/**
+ * Panels refresh at most this often because of live events. Reading the audit
+ * trail is itself audited and announced, so without a floor each refresh creates the
+ * event that triggers the next one and the console floods its own request budget.
+ */
+const REVISION_MIN_GAP_MS = 3000;
+
 /** Reconnect backoff, in milliseconds. Capped so it keeps trying. */
 const BACKOFF = [1000, 2000, 5000, 10_000, 30_000];
 
@@ -58,17 +65,27 @@ export function LiveProvider({ children }) {
   const attempt = useRef(0);
   const stopped = useRef(false);
 
+  const revisionTimer = useRef(null);
+  const bumpRevision = useCallback(() => {
+    if (revisionTimer.current) return;
+    revisionTimer.current = setTimeout(() => {
+      revisionTimer.current = null;
+      setRevision((n) => n + 1);
+    }, REVISION_MIN_GAP_MS);
+  }, []);
+
   const push = useCallback((event) => {
     setEvents((current) => [{ ...event, id: `${event.at}-${current.length}` }, ...current].slice(0, KEEP));
     setLastEventAt(event.at || new Date().toISOString());
-    setRevision((n) => n + 1);
+    // Events caused by reading the audit trail are not news about the system.
+    if (event.resourceType !== 'audit_trail') bumpRevision();
     // Only events worth interrupting someone for count towards the badge.
     // Counting routine sign-ins would give an administrator a number that is
     // always large and therefore never informative.
     if (event.severity === 'high' || event.severity === 'critical') {
       setUnread((n) => n + 1);
     }
-  }, []);
+  }, [bumpRevision]);
 
   const markRead = useCallback(() => setUnread(0), []);
   const clearEvents = useCallback(() => { setEvents([]); setUnread(0); }, []);
@@ -138,6 +155,8 @@ export function LiveProvider({ children }) {
     return () => {
       stopped.current = true;
       clearTimeout(retry);
+      clearTimeout(revisionTimer.current);
+      revisionTimer.current = null;
       controller?.abort();
       offSessionLost();
     };
