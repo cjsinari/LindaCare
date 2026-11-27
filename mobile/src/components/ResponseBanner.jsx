@@ -70,10 +70,14 @@ export function statusLine({ status, code }) {
  * `quietSuccess`: outside demo mode, say nothing when a plain read worked. A
  * green "Loaded" over a list that has just appeared tells nobody anything; in
  * demo mode it is the 200 a reviewer is waiting to see.
+ *
+ * `hideSuccess`: say nothing on any success, demo mode included. For a list
+ * screen, where the 200 is just the page loading; refusals still show.
  */
-export default function ResponseBanner({ result, quietSuccess = false, style }) {
+export default function ResponseBanner({ result, quietSuccess = false, hideSuccess = false, style }) {
   if (!result) return null;
   const demo = isDemoMode();
+  if (hideSuccess && toneFor(result.status) === 'success') return null;
   if (quietSuccess && !demo && toneFor(result.status) === 'success') return null;
   const { bg, fg, icon } = TONES[toneFor(result.status)];
   const line = statusLine(result);

@@ -76,7 +76,7 @@ export default function CareProfilesScreen({ navigation, route }) {
       refreshing={isRefreshing}
     >
       <View style={styles.sections}>
-        <ResponseBanner result={result} quietSuccess />
+        <ResponseBanner result={result} quietSuccess hideSuccess />
 
         {canCreate ? (
           <PillButton
