@@ -118,7 +118,7 @@ export default function CareProfileDetailScreen({ navigation, route }) {
       refreshing={isRefreshing}
     >
       <View style={styles.sections}>
-        <ResponseBanner result={result} quietSuccess />
+        <ResponseBanner result={result} quietSuccess hideSuccess />
 
         {mode === 'deleted' ? (
           <Card style={styles.card}>
